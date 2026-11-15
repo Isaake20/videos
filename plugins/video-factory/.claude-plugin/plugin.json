@@ -1,0 +1,6 @@
+{
+  "name": "video-factory",
+  "version": "1.0.0",
+  "description": "Fábrica automática de Shorts guiada por tendencias: scouting, análisis de canales, guion, voz ElevenLabs, render y control de calidad.",
+  "author": {"name": "video-factory"}
+}

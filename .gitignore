@@ -1,0 +1,5 @@
+work/
+output/
+__pycache__/
+state/trends.json
+state/wiki.log

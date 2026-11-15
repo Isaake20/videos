@@ -1,0 +1,39 @@
+{
+  "channels": [
+    {
+      "handle": "@CuriosaMente",
+      "why": "divulgación en español, preguntas como título",
+      "id": "UCX16cLWl6dCjlZMgUBxgGkA"
+    },
+    {
+      "handle": "@QuantumFracture",
+      "why": "ciencia en español con animación propia",
+      "id": "UCbdSYaPD-lr1kW27UJuk8Pw"
+    },
+    {
+      "handle": "@unmundoinmenso",
+      "why": "curiosidades geográficas con mapas, narración sin rostro",
+      "id": "UCdwdFOhBP9CoAOlHDTmTxaw"
+    },
+    {
+      "handle": "@ElRobotdePlaton",
+      "why": "ciencia y tecnología ligadas a la actualidad",
+      "id": "UCaVPhFg-Ax873wvhbNitsrQ"
+    },
+    {
+      "handle": "@Dateunvlog",
+      "why": "ciencia de actualidad, ritmo rápido",
+      "id": "UCQX_MZRCaluNKxkywkLEgfA"
+    },
+    {
+      "handle": "@zackdfilms",
+      "why": "referente mundial de Shorts explicativos de 30-40 s",
+      "id": "UCvz84_Q0BbvZThy75mbd-Dg"
+    },
+    {
+      "handle": "@kurzgesagt_es",
+      "why": "explicadores de alta retención",
+      "id": "UCZcvCpFcLxOKGbMocVgLjEA"
+    }
+  ]
+}

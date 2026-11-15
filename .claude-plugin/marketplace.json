@@ -1,0 +1,5 @@
+{
+  "name": "video-factory-local",
+  "owner": {"name": "video-factory"},
+  "plugins": [{"name": "video-factory", "source": "./plugins/video-factory", "description": "Fábrica automática de Shorts guiada por tendencias."}]
+}
