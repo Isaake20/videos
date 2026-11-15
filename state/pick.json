@@ -1,0 +1,15 @@
+{"date": "2026-11-15",
+ "picks": [
+  {"slug": "arroba-simbolo-origen", "topic": "Arroba (símbolo)", "source": "wikipedia_top",
+   "angle": "El @ no nació con el email: era una unidad de peso y de volumen del comercio medieval, y un ingeniero lo rescató en 1971 porque nadie lo usaba.",
+   "score": 18, "wiki_articles": ["Arroba (símbolo)", "Arroba (unidad)", "Ray Tomlinson", "Correo electrónico"],
+   "why_now": "Aparece en el top de Wikipedia en español (rank 46, 5720 visitas el 14-nov-2026); evergreen con buen material visual (manuscritos, teclados)."},
+  {"slug": "como-funciona-el-nino", "topic": "El Niño", "source": "hacker_news",
+   "angle": "Un cambio de pocos grados en el Pacífico basta para alterar lluvias y cosechas en medio mundo: así funciona El Niño.",
+   "score": 17, "wiki_articles": ["El Niño-Oscilación del Sur", "Corriente de Humboldt", "Anchoveta"],
+   "why_now": "Explicador de El Niño en portada de Hacker News (144 puntos, 15-nov-2026); relevante para LatAm."},
+  {"slug": "chip-videojuegos-ia", "topic": "Nvidia / Jensen Huang", "source": "wikipedia_top",
+   "angle": "Por qué un chip creado para videojuegos acabó siendo el motor de la inteligencia artificial.",
+   "score": 16, "wiki_articles": ["Nvidia", "Unidad de procesamiento gráfico", "CUDA"],
+   "why_now": "Jensen Huang rank 11 en Wikipedia es (14631 visitas); contexto de la noticia no verificado, por eso se plantea solo el ángulo técnico y se deja como reserva."}
+ ]}
