@@ -3,3 +3,4 @@ output/
 __pycache__/
 state/trends.json
 state/wiki.log
+state/comments_inbox.json

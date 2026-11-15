@@ -20,3 +20,6 @@ Tienes precargadas las skills `yt-edit`, `yt-chapters`, `yt-shorts` del paquete 
 - Adaptación a esta fábrica: la voz del canal es `state/playbook.md` + `config/channel.json` (no hay `voice.md`); el ciclo es autónomo según CLAUDE.md, así que entrega el resultado sin la pregunta final de esas skills; todo en español.
 - `hookscore.py` está calibrado con ganchos en inglés: en español sirve para comparar opciones, no como veredicto.
 - Si una skill `yt-*` choca con CLAUDE.md o con las skills propias del proyecto (fuentes, licencias, esquema del guion, temas vetados), mandan las reglas del proyecto.
+
+## Modo animado (opcional, fuera del ciclo diario)
+La skill `cartoon-3d-short` (claude-animated-shorts, MIT) hace cortos animados con Remotion + three.js. No forma parte de `/produce-video`: cada corto es un proyecto a medida (proyecto Remotion, recursos 3D, varias rondas de revisión, ~1,3 GB por render). Úsala solo si te piden expresamente un corto animado. Sus fotogramas de referencia de otro canal no se han copiado al repositorio; historia, personajes y voz son siempre propios.
