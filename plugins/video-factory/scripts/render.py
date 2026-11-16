@@ -369,11 +369,25 @@ th.convert("RGB").save(path(*odir, "thumbnail.jpg"), quality=90)
 research = load(wd("research.json"), {"images": []})
 used = {x for sc in script["scenes"] for x in (sc.get("images") or [sc.get("image")])}
 credits = [f"{im['title']} — {im['author']} ({im['license']}) {im['source']}" for im in research["images"] if im["file"] in used]
-desc = script["description"].strip() + "\n\nFuentes:\n" + "\n".join(script["sources"])
+# chapters: the script gives estimated times; the real ones come from the narration timing of the scene each chapter opens
+chap = []
+if script.get("chapters"):
+    wps, cum, est = cfg.get("words_per_second", 2.6), 0, []
+    for sc in script["scenes"]:
+        est.append(cum / wps); cum += len(sc["text"].split())
+    for c in script["chapters"]:
+        parts = c["t"].split(":"); t0 = int(parts[-2]) * 60 + int(parts[-1])
+        i = min(range(len(est)), key=lambda k: abs(est[k] - t0)); s = timing["scenes"][i]["start"]
+        chap.append({"t": f"{int(s // 60):02d}:{int(s % 60):02d}", "title": c["title"]})
+    chap[0]["t"] = "00:00"
+desc = script["description"].strip()
+if chap:
+    desc += "\n\nCapítulos:\n" + "\n".join(f"{c['t']} {c['title']}" for c in chap)
+desc += "\n\nFuentes:\n" + "\n".join(script["sources"])
 if credits:
     desc += "\n\nImágenes (Wikimedia Commons):\n" + "\n".join(credits)
 desc += "\n\nNarración generada con voz sintética (ElevenLabs).\n\n" + " ".join(script["hashtags"])
-save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "title": script["title"], "description": desc, "hashtags": script["hashtags"],
+save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "chapters": chap, "title": script["title"], "description": desc, "hashtags": script["hashtags"],
                                     "duration": timing["duration"], "draft": draft, "trend": script["trend"],
                                     "synthetic_voice_disclosure": True, "image_credits": credits})
 if not LONG and not draft:  # TikTok takes the same vertical file; only the caption differs
