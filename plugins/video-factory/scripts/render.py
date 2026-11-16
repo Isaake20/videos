@@ -237,7 +237,12 @@ HOOKFG, HOOKBG = ("&H00FFFFFF", "&H002C2CDE") if DOC else ("&H00000000", "&H0000
 
 
 def captions():
-    ws, chunks, cur = timing["words"], [], []
+    ws, chunks, cur = [], [], []
+    for w in timing["words"]:  # a lone symbol (%, ×, °) belongs to the word before it
+        if ws and w["w"] in ("%", "×", "°") and ws[-1]["scene"] == w["scene"]:
+            ws[-1] = {**ws[-1], "w": ws[-1]["w"] + w["w"], "e": w["e"]}
+        else:
+            ws.append(w)
     for i, w in enumerate(ws):
         cur.append(w)
         last = i == len(ws) - 1

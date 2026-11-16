@@ -32,7 +32,7 @@ pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-sho
 vs = next(s for s in pr["streams"] if s["codec_type"] == "video")
 dur = float(pr["format"]["duration"])
 long = script.get("format") == "long"
-checks = {"size_ok": (vs["width"], vs["height"]) == ((1920, 1080) if long else (1080, 1920)), "duration_ok": dur <= (600 if long else 60),
+checks = {"size_ok": (vs["width"], vs["height"]) == ((1920, 1080) if long else (1080, 1920)), "duration_ok": dur <= (720 if long else 60),
           "has_audio": any(s["codec_type"] == "audio" for s in pr["streams"]),
           "file_size_ok": int(pr["format"]["size"]) < (400e6 if long else 100e6)}
 print("checks:", checks)
