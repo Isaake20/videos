@@ -105,7 +105,7 @@ def paste_rot(bg, layer, angle, cx, cy, shadow=True):
 def g_photo(bg, sc, img, i, k):
     """A picture as an evidence photo: white frame, slight tilt, optional typewriter label."""
     im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
-    fg = ImageOps.contain(im, (int(S[0] * 0.74), int(S[1] * 0.46)))
+    fg = ImageOps.contain(im, (int(S[0] * 0.70), int(S[1] * 0.46)))
     if fg.width < S[0] * 0.55:
         fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.46)), centering=(0.5, 0.3))
     fg = Image.blend(fg, ImageOps.grayscale(fg).convert("RGB"), 0.35)
@@ -141,13 +141,13 @@ def g_doc(bg, sc, prog):
     """A typed document: label, typewriter text appearing in steps, then a red marker on the key phrase."""
     doc = sc["doc"]; w, h = int(S[0] * 0.72), int(S[1] * 0.42)
     card = Image.new("RGBA", (w, h), PAPER + (255,)); d = ImageDraw.Draw(card)
-    fl = ImageFont.truetype(TYPE, 46); d.text((70, 64), doc.get("label", "").upper(), font=fl, fill=(110, 104, 96))
+    fl, _ = fit(d, [doc.get("label", "").upper() or " "], TYPE, 46, w - 150, 24); d.text((70, 64), doc.get("label", "").upper(), font=fl, fill=(110, 104, 96))
     d.line((70, 132, w - 70, 132), fill=(150, 144, 134), width=3)
     size = 96; f = ImageFont.truetype(TYPE, size); lines = wrap_px(d, doc["text"], f, w - 140)
     while size > 54 and len(lines) * size * 1.35 > h - 240:
         size -= 6; f = ImageFont.truetype(TYPE, size); lines = wrap_px(d, doc["text"], f, w - 140)
     total = sum(len(x) for x in lines); left = max(3, round(total * min(1, prog * 1.25))); y = 180
-    hl = (doc.get("highlight") or "").lower()
+    hl = (doc.get("highlight") or "").lower().strip(" .,;:!?¡¿")
     for ln in lines:
         part = ln[:left]; left -= len(part)
         if hl and prog >= 1 and hl in ln.lower():
@@ -177,8 +177,8 @@ def g_stat(bg, sc, prog):
 
 def g_timeline(bg, sc, prog):
     """Two moments joined by a line that grows; the last build shows the distance between them."""
-    tl = sc["timeline"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.47; x0, x1 = S[0] * 0.16, S[0] * 0.84
-    ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, int(190 * Q) + 20, S[0] * 0.30, 80)
+    tl = sc["timeline"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.47; x0, x1 = S[0] * 0.24, S[0] * 0.76
+    ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, int(190 * Q) + 20, S[0] * 0.26, 80)
     d.line((x0, cy, x1, cy), fill=(90, 90, 96), width=6)
     xe = x0 + (x1 - x0) * min(1, prog * 1.2)
     d.line((x0, cy, xe, cy), fill=RED, width=14)
@@ -283,7 +283,10 @@ for i, (sc, tm) in enumerate(zip(script["scenes"], timing["scenes"])):
         nk = n // ns + (n % ns if k == ns - 1 else 0)
         img = imgs[k % len(imgs)] if imgs else None
         kick = "0.07*exp(-on/3)"
-        if img:
+        if img and DOC:  # gentle moves: the framed photo must never leave the frame
+            z, fx, fy = [(f"1.0+0.10*on/{nk}+0.04*exp(-on/3)", "0.5", "0.42"), (f"1.08+0.04*exp(-on/3)", f"0.38+0.24*on/{nk}", "0.42"),
+                         (f"1.12-0.10*on/{nk}+0.04*exp(-on/3)", "0.5", "0.44"), (f"1.04+0.06*on/{nk}+0.04*exp(-on/3)", f"0.62-0.24*on/{nk}", "0.42")][(i + k) % 4]
+        elif img:
             z, fx, fy = [(f"1.02+0.16*on/{nk}+{kick}", "0.5", "0.42"), (f"1.20+{kick}", f"0.12+0.76*on/{nk}", "0.40"),
                          (f"1.26-0.18*on/{nk}+{kick}", "0.5", "0.44"), (f"1.14+0.10*on/{nk}+{kick}", f"0.88-0.76*on/{nk}", "0.38")][(i + k) % 4]
         else:
