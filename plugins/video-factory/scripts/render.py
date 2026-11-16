@@ -124,7 +124,8 @@ def g_card(bg, sc, prog):
     d = ImageDraw.Draw(bg); words = sc["card"].upper().split()
     full = textwrap.wrap(" ".join(words), 11) or [""]
     f, fs = fit(d, full, DISP, int((560 if len(sc["card"]) <= 3 else 400) * Q), S[0] * 0.74, 110)
-    shown = max(1, round(len(words) * prog)); y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
+    shown = max(1, min(len(words), int(len(words) * min(1.0, prog * 1.5) + 0.999)))  # reveal faster than the shots advance
+    y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
     for ln in full:
         x = S[0] / 2 - d.textlength(ln, font=f) / 2
         for w in ln.split():
@@ -133,7 +134,7 @@ def g_card(bg, sc, prog):
                 d.text((x, y), w, font=f, fill=RED if (n == len(words) and prog >= 1 and len(words) > 1) else "white")
             x += d.textlength(w + " ", font=f)
         y += fs * 1.0
-    if prog >= 1:
+    if prog >= 0.7:  # the rule shows one shot before the last word turns red, so the end card keeps changing
         d.rectangle((S[0] * 0.36, y + 24, S[0] * 0.64, y + 40), fill=RED)
 
 
