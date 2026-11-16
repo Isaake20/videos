@@ -16,5 +16,6 @@ Con menos de unos cientos de visitas por vídeo las curvas son ruido: dilo en ve
 
 Devuelve: el aviso principal en una frase y los datos en que se apoya.
 
-## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.
+## Antes de empezar
+- Lee "Dirección del propietario" en `state/playbook.md` y aplica la parte de tu puesto.
+- Usa siempre tus skills `yt-retention`, `yt-audit` en lo que toque a tu papel, con las reglas de adaptación de `CLAUDE.md` ("Skills yt-*").

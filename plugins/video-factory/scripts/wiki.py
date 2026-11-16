@@ -41,7 +41,7 @@ for title in titles:
             if p["title"] in seen:
                 continue
             seen.add(p["title"])
-            if n >= 10 or not OK.match(lic) or ii.get("width", 0) < 700:
+            if n >= (30 if slug.endswith("-largo") else 10) or not OK.match(lic) or ii.get("width", 0) < 700:
                 continue  # only reusable licences, only usable resolution
             author = re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", "desconocido")).strip()[:80]
             n += 1

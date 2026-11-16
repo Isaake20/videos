@@ -12,7 +12,7 @@ La clave **no** está en ninguna variable: el proxy de red del entorno la inyect
 - `tts.py <slug> --draft` → pista muda con tiempos estimados. Solo para previsualizar; el render queda marcado como BORRADOR.
 
 ## Voz
-`config/channel.json → elevenlabs.voice_id`. Si está vacío, `tts.py` elige una voz en español de la cuenta y la guarda: la voz del canal debe ser siempre la misma. La voz actual es "M - voz ágil" (rápida, latinoamericana); el propietario pidió el 2026-11-16 usarla siempre: no la cambies. Ajustes: `stability` 0,3 (muy expresiva), `style` 0,55, `speed` 1,12, modelo `eleven_multilingual_v2`. El `music_prompt` debe pedir música de documental de intriga: tensa, sobria, con pulso (dark investigative documentary underscore, pulsing, ~100 bpm), no alegre.
+`config/channel.json → elevenlabs.voice_id`. Si está vacío, `tts.py` elige una voz en español de la cuenta y la guarda: la voz del canal debe ser siempre la misma. La voz actual es "M - voz ágil" (rápida, latinoamericana); el propietario pidió el 2026-11-16 usarla siempre: no la cambies. Ajustes: `stability` 0,3 (muy expresiva), `style` 0,55, `speed` 1,12, modelo `eleven_multilingual_v2`. Un vídeo largo gasta unos 9.000 caracteres; `tts.py` lo envía en tramos de hasta 4.200 y los une. La cuota mensual (unos 160.000) da para el Short diario y tres largos por semana, no para un largo diario. El `music_prompt` debe pedir música de documental de intriga: tensa, sobria, con pulso (dark investigative documentary underscore, pulsing, ~100 bpm), no alegre.
 
 ## Cuota
 Antes de generar, `tts.py` consulta `/v1/user/subscription` y se detiene si quedan menos del doble de caracteres necesarios. Tope por ejecución: `max_chars_per_run`. Un Short gasta ≈ 700-900 caracteres.

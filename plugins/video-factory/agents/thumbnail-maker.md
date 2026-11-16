@@ -17,5 +17,6 @@ Sé honesto con lo que es esto: eliges por legibilidad y por el linter, no por c
 
 Devuelve: la variante elegida, su texto y por qué.
 
-## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.
+## Antes de empezar
+- Lee "Dirección del propietario" en `state/playbook.md` y aplica la parte de tu puesto.
+- Usa siempre tus skills `yt-package` en lo que toque a tu papel, con las reglas de adaptación de `CLAUDE.md` ("Skills yt-*").

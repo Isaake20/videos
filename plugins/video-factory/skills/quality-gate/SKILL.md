@@ -37,4 +37,5 @@ Mismo formato de veredicto. Un vídeo con `fail` no se cuenta como terminado.
 ## Formato documental (criterio del propietario, 2026-11-16)
 Lee "Dirección del propietario" en `state/playbook.md`. Rechaza si:
 - **guion**: no hay intriga (gancho con cifra exacta, un "pero" que gire, pregunta final), suena a enciclopedia, hay tres escenas seguidas del mismo tipo de gráfico, o algún texto en pantalla (`value`, `text`, `label`, `card`) no está respaldado por `research.json`;
+- **vídeo largo** (`format: long`): además de lo anterior, rechaza si hay relleno (capítulos que no aportan una prueba nueva), si pasa más de 2 minutos sin recordar lo que falta por resolver, o si dura menos de 8 minutos; revisa fotogramas de al menos 12 momentos repartidos y comprueba que mide 1920x1080;
 - **vídeo**: un plano no cambia durante más de 3 s (compara fotogramas separados 2,5 s), el estilo no es el oscuro con acento rojo, un gráfico sale cortado o ilegible, o la voz no es la de `config/channel.json`.

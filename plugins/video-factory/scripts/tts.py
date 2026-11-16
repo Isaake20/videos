@@ -5,7 +5,7 @@ Writes work/<slug>/voice.mp3 and timing.json (per-word start/end, per-scene rang
 --draft: no API call; silent track with estimated timings, for layout previews only
 (the render is then marked DRAFT and must never be published).
 The API key is injected by the environment's network proxy; none is read here."""
-import base64, subprocess, sys
+import base64, os, subprocess, sys
 from common import get_json, load, save, path, die
 
 slug = sys.argv[1]; draft = "--draft" in sys.argv
@@ -49,25 +49,48 @@ else:
         cfg["elevenlabs"]["voice_id"] = vid; cfg["elevenlabs"]["voice_name"] = v["name"]
         save(path("config", "channel.json"), cfg)
         print(f"voice chosen: {v['name']} ({vid})")
-    r = get_json(f"{API}/v1/text-to-speech/{vid}/with-timestamps?output_format=mp3_44100_128", headers=H, timeout=180,
-                 data={"text": full, "model_id": el.get("model_id", "eleven_multilingual_v2"),
-                       "voice_settings": el.get("voice_settings", {})})
-    open(path("work", slug, "voice.mp3"), "wb").write(base64.b64decode(r["audio_base64"]))
-    al = r["alignment"]; ch, st, en = al["characters"], al["character_start_times_seconds"], al["character_end_times_seconds"]
-    bounds, pos = [], 0
-    for tx in texts:
-        pos += len(tx) + 1; bounds.append(pos)
-    cur, s0, e0, si = "", None, 0, 0
-    for i, c in enumerate(ch + [" "]):
-        if c.isspace():
-            if cur:
-                words.append({"w": cur, "s": round(s0, 3), "e": round(e0, 3), "scene": si}); cur = ""
-            while si < len(bounds) - 1 and i + 1 >= bounds[si]:
-                si += 1
-        else:
-            if not cur:
-                s0 = st[i]
-            cur += c; e0 = en[i]
+    # long narrations go out in pieces of at most ~4200 characters (whole scenes), then get joined
+    groups, cur, n = [], [], 0
+    for si, tx in enumerate(texts):
+        if cur and n + len(tx) + 1 > 4200:
+            groups.append(cur); cur, n = [], 0
+        cur.append(si); n += len(tx) + 1
+    groups.append(cur)
+    parts, t0 = [], 0.0
+    for gi, idx in enumerate(groups):
+        gtexts = [texts[i] for i in idx]; body = {"text": " ".join(gtexts), "model_id": el.get("model_id", "eleven_multilingual_v2"),
+                                                 "voice_settings": el.get("voice_settings", {})}
+        if gi > 0:
+            body["previous_text"] = " ".join(texts[i] for i in groups[gi - 1])[-300:]
+        if gi < len(groups) - 1:
+            body["next_text"] = " ".join(texts[i] for i in groups[gi + 1])[:300]
+        r = get_json(f"{API}/v1/text-to-speech/{vid}/with-timestamps?output_format=mp3_44100_128", headers=H, timeout=300, data=body)
+        part = path("work", slug, f"voice_{gi:02d}.mp3"); open(part, "wb").write(base64.b64decode(r["audio_base64"])); parts.append(part)
+        al = r["alignment"]; ch, st, en = al["characters"], al["character_start_times_seconds"], al["character_end_times_seconds"]
+        bounds, pos = [], 0
+        for tx in gtexts:
+            pos += len(tx) + 1; bounds.append(pos)
+        cur, s0, e0, k = "", None, 0, 0
+        for i, c in enumerate(ch + [" "]):
+            if c.isspace():
+                if cur:
+                    words.append({"w": cur, "s": round(t0 + s0, 3), "e": round(t0 + e0, 3), "scene": idx[k]}); cur = ""
+                while k < len(bounds) - 1 and i + 1 >= bounds[k]:
+                    k += 1
+            else:
+                if not cur:
+                    s0 = st[i]
+                cur += c; e0 = en[i]
+        t0 += float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", part],
+                                   capture_output=True, text=True).stdout or 0)
+    voice = path("work", slug, "voice.mp3")
+    if len(parts) == 1:
+        os.replace(parts[0], voice)
+    else:
+        cmd = ["ffmpeg", "-y", "-loglevel", "error"]
+        for pth in parts:
+            cmd += ["-i", pth]
+        subprocess.run(cmd + ["-filter_complex", f"concat=n={len(parts)}:v=0:a=1", "-b:a", "128k", voice], check=True)
 
 scenes = []
 for si in range(len(texts)):

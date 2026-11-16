@@ -49,3 +49,11 @@ El propietario pasó un vídeo de referencia y quiere que todos los vídeos se p
 - **Locutor y Animador**: voz "M - voz ágil" (decisión del propietario: no se cambia); `config/channel.json → style: "documental"`; música tensa y sobria, no alegre.
 - **Miniaturista**: fondo oscuro, texto blanco o rojo, una cifra o una palabra.
 - **Studio, Retención, Comunidad**: mismo tono sobrio en títulos, descripciones y respuestas; sin exclamaciones de relleno.
+
+## Formatos y objetivo (2026-11-16): monetizar
+El objetivo del canal es monetizar. Tres piezas por tema:
+- **Vídeo largo de YouTube** (8-10 min, horizontal): es el que monetiza de verdad (anuncios intermedios a partir de 8 min, horas de visualización). Tiene que sostener la atención: capítulos de 60-90 s, cada uno abre una pregunta y la cierra; una promesa en los primeros 15 s y un "recordatorio de lo que falta" cada 2 minutos; nada de relleno.
+- **Short de YouTube** (40-55 s, vertical): el mejor gancho del mismo caso; sirve para traer gente al largo ("el caso completo está en el canal").
+- **TikTok** (el mismo vertical, con su propio texto): se sube a mano.
+Todos deben quedar profesionales, entretenidos y con gancho: intriga, ritmo, gráficos por frase y cero pantallas quietas.
+

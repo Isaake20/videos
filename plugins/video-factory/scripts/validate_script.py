@@ -16,11 +16,13 @@ for k in ("slug", "title", "hook_text", "scenes", "sources", "description", "has
         errs.append(f"missing field: {k}")
 scenes = s.get("scenes") or []
 words = sum(len(sc.get("text", "").split()) for sc in scenes)
-lo, hi = cfg.get("target_seconds", [40, 55]); wps = cfg.get("words_per_second", 2.6)
+long = s.get("format") == "long"
+lo, hi = cfg.get("long_seconds", [480, 600]) if long else cfg.get("target_seconds", [40, 55]); wps = cfg.get("words_per_second", 2.6)
 if not lo * wps <= words <= hi * wps:
     errs.append(f"narration has {words} words; need {int(lo*wps)}-{int(hi*wps)} for {lo}-{hi}s")
-if not 4 <= len(scenes) <= 9:
-    errs.append(f"{len(scenes)} scenes; need 4-9 (a visual change every 5-9 s)")
+smin, smax = (60, 150) if long else (4, 9)
+if not smin <= len(scenes) <= smax:
+    errs.append(f"{len(scenes)} scenes; need {smin}-{smax} for this format")
 wdir = os.path.dirname(os.path.abspath(p))
 for i, sc in enumerate(scenes, 1):
     if not sc.get("text"):

@@ -31,15 +31,16 @@ pr = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-sho
                                capture_output=True, text=True).stdout)
 vs = next(s for s in pr["streams"] if s["codec_type"] == "video")
 dur = float(pr["format"]["duration"])
-checks = {"1080x1920": (vs["width"], vs["height"]) == (1080, 1920), "under_60s": dur <= 60,
+long = script.get("format") == "long"
+checks = {"size_ok": (vs["width"], vs["height"]) == ((1920, 1080) if long else (1080, 1920)), "duration_ok": dur <= (600 if long else 60),
           "has_audio": any(s["codec_type"] == "audio" for s in pr["streams"]),
-          "under_100MB": int(pr["format"]["size"]) < 100e6}
+          "file_size_ok": int(pr["format"]["size"]) < (400e6 if long else 100e6)}
 print("checks:", checks)
 if not all(checks.values()):
     die("technical checks failed")
 if not draft:
-    hist = load(path("state", "history.json"), [])
+    hist = [h for h in load(path("state", "history.json"), []) if not (h["slug"] == slug and h["date"] == day)]  # re-renders replace
     hist.append({"date": day, "slug": slug, "title": script["title"], "topic_key": script["trend"]["topic"].lower(),
-                 "chars": load(path("work", slug, "timing.json"))["chars"], "output": os.path.relpath(odir, path("x")[:-2])})
+                 "chars": load(path("work", slug, "timing.json"))["chars"], "output": os.path.relpath(odir, path("x")[:-2]), "format": "long" if long else "short"})
     save(path("state", "history.json"), hist)
 print(f"DONE {'(draft) ' if draft else ''}{v}  {dur:.1f}s")

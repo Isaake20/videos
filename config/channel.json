@@ -14,7 +14,7 @@
     40,
     55
   ],
-  "words_per_second": 2.6,
+  "words_per_second": 3.2,
   "videos_per_run": 1,
   "elevenlabs": {
     "voice_id": "CjD6JLhiDwLIE7zTlpAR",
@@ -26,7 +26,7 @@
       "speed": 1.12
     },
     "music": true,
-    "max_chars_per_run": 2500,
+    "max_chars_per_run": 11000,
     "voice_name": "M - voz ágil"
   },
   "avoid_topics": [
@@ -41,12 +41,26 @@
     "enabled": true,
     "platform": "youtube",
     "privacy": "public",
-    "max_uploads_per_day": 1,
+    "max_uploads_per_day": 2,
     "category_id": "27"
   },
   "community": {
     "enabled": true,
     "max_replies_per_day": 15
   },
-  "style": "documental"
+  "style": "documental",
+  "formats": [
+    "short",
+    "tiktok",
+    "long"
+  ],
+  "long_seconds": [
+    480,
+    600
+  ],
+  "long_weekdays": [
+    0,
+    2,
+    4
+  ]
 }

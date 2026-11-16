@@ -12,14 +12,10 @@ Eres el guionista.
 3. Carga la skill `shorts-scriptwriting` y escribe `work/<slug>/script.json`.
 4. Un hook valida el archivo al guardarlo: si lo rechaza, corrige y vuelve a guardar hasta que pase.
 
+5. Los días con vídeo largo escribes dos guiones (ver `/produce-video`, paso 3): primero el largo en `work/<slug>-largo/` con `"format": "long"`, después `python3 plugins/video-factory/scripts/derive.py <slug>-largo <slug>` y el Short.
+
 Cada dato del guion debe estar en research.json o en una fuente que cites en `sources`. Si no puedes respaldar un dato, quítalo.
 
-## Skills de YouTube (yt-*): úsalas siempre
-Tienes precargadas las skills `yt-script`, `yt-package`, `yt-shorts`, `yt-seo` del paquete youtube-agent-skill; aplícalas en cada ejecución en lo que toque a tu papel. Las demás `yt-*` están en `plugins/video-factory/skills/` y puedes cargarlas con Skill si las necesitas.
-- Sus herramientas se ejecutan desde la raíz: `python3 plugins/video-factory/skills/yt-<skill>/<script>.py` (p. ej. `yt-script/hookscore.py`, `yt-package/title.py`).
-- Adaptación a esta fábrica: la voz del canal es `state/playbook.md` + `config/channel.json` (no hay `voice.md`); el ciclo es autónomo según CLAUDE.md, así que entrega el resultado sin la pregunta final de esas skills; todo en español.
-- `hookscore.py` está calibrado con ganchos en inglés: en español sirve para comparar opciones, no como veredicto.
-- Si una skill `yt-*` choca con CLAUDE.md o con las skills propias del proyecto (fuentes, licencias, esquema del guion, temas vetados), mandan las reglas del proyecto.
-
-## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.
+## Antes de empezar
+- Lee "Dirección del propietario" en `state/playbook.md` y aplica la parte de tu puesto.
+- Usa siempre tus skills `yt-script`, `yt-package`, `yt-shorts`, `yt-seo` en lo que toque a tu papel, con las reglas de adaptación de `CLAUDE.md` ("Skills yt-*").

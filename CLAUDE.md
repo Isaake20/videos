@@ -1,6 +1,6 @@
 # video-factory
 
-Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: `config/channel.json`.
+Fábrica autónoma de vídeos documentales en español guiados por tendencias: Shorts, TikTok y vídeos largos de YouTube. Canal y nicho: `config/channel.json`.
 
 ## Cómo trabajar aquí
 - Un ciclo completo es `/produce-video` (ver `plugins/video-factory/commands/produce-video.md`). Se ejecuta **sin pedir aprobación**: decide, produce y deja el resultado en `output/`.
@@ -10,7 +10,15 @@ Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: 
 - La clave de ElevenLabs la inyecta el proxy del entorno para `api.elevenlabs.io`; no existe como variable y no se pide en el chat.
 
 ## Criterio del propietario
+- El objetivo es monetizar. Tres formatos por tema: Short vertical y su copia para TikTok cada día, y vídeo largo horizontal de 8-10 min los días de `long_weekdays` (`config/channel.json`). Todos profesionales, entretenidos y con gancho.
 - Todos los vídeos siguen el formato documental del vídeo de referencia del propietario: fondo oscuro, acento rojo, un gráfico animado por frase (cifra, documento, línea de tiempo, foto con etiqueta), tono de intriga y cortes cada ~2 s. Se copia el formato, nunca el contenido. La voz es siempre "M - voz ágil". Detalle por puesto en `state/playbook.md` ("Dirección del propietario"); todos los agentes lo leen antes de trabajar.
+
+## Skills yt-*
+Las skills `yt-*` (paquete youtube-agent-skill) están en `plugins/video-factory/skills/`; cada agente usa siempre las suyas.
+- Sus herramientas se ejecutan desde la raíz: `python3 plugins/video-factory/skills/yt-<skill>/<script>.py`.
+- La voz del canal es `state/playbook.md` + `config/channel.json` (no hay `voice.md`); el ciclo es autónomo, así que se entrega sin la pregunta final de esas skills; todo en español.
+- `hookscore.py` está calibrado en inglés: en español solo sirve para comparar opciones.
+- Si una skill `yt-*` choca con este archivo o con las skills propias del proyecto, mandan las reglas del proyecto.
 
 ## Reglas que no se saltan
 - Guion propio a partir de investigación propia. De otros canales solo se estudian patrones (`state/playbook.md`).
@@ -21,4 +29,4 @@ Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: 
 - Temas vetados: `avoid_topics` en la configuración.
 
 ## Estado
-`state/trends.json` señales · `state/channels.json` análisis · `state/playbook.md` manual de estilo · `state/pick.json` tema elegido · `state/history.json` vídeos hechos · `state/runs.log` bitácora.
+`state/trends.json` señales · `state/channels.json` análisis · `state/playbook.md` manual de estilo · `state/pick.json` tema elegido · `state/history.json` vídeos hechos · `state/published.json` publicados · `state/analytics.json` métricas · `state/runs.log` bitácora · `oficina/index.html` panel.

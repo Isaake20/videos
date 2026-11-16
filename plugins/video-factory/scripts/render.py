@@ -7,9 +7,11 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 from common import load, save, path, die
 
 slug = sys.argv[1]
-W, H, FPS, Z = 1080, 1920, 30, 1.2
 wd = lambda *a: path("work", slug, *a)
 script = load(wd("script.json")) or die("no script.json")
+LONG = script.get("format") == "long"  # long = horizontal YouTube video; anything else = vertical Short
+W, H, FPS, Z = (1920, 1080, 30, 1.2) if LONG else (1080, 1920, 30, 1.2)
+Q = 0.6 if LONG else 1.0  # display type is limited by height on a horizontal frame
 timing = load(wd("timing.json")) or die("no timing.json; run tts.py")
 draft = timing.get("draft", False)
 FONT = next(f for f in ("/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf",
@@ -121,7 +123,7 @@ def g_card(bg, sc, prog):
     """Kinetic title: words appear build by build; the last build adds the red rule."""
     d = ImageDraw.Draw(bg); words = sc["card"].upper().split()
     full = textwrap.wrap(" ".join(words), 11) or [""]
-    f, fs = fit(d, full, DISP, 560 if len(sc["card"]) <= 3 else 400, S[0] * 0.74, 110)
+    f, fs = fit(d, full, DISP, int((560 if len(sc["card"]) <= 3 else 400) * Q), S[0] * 0.74, 110)
     shown = max(1, round(len(words) * prog)); y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
     for ln in full:
         x = S[0] / 2 - d.textlength(ln, font=f) / 2
@@ -162,12 +164,12 @@ def g_stat(bg, sc, prog):
     st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.43
     if st.get("over"):
         fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
-        d.text((S[0] / 2, cy - 330), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
-    f, fs = fit(d, [st["value"].upper()], DISP, 620, S[0] * 0.76, 160)
+        d.text((S[0] / 2, cy - 330 * Q), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
+    f, fs = fit(d, [st["value"].upper()], DISP, int(620 * Q), S[0] * 0.76, 160)
     d.text((S[0] / 2, cy), st["value"].upper(), font=f, fill=RED if prog >= 1 else "white", anchor="mm")
     if st.get("label") and prog >= 0.6:
-        fl, ls = fit(d, [st["label"].upper()], DISP, 120, S[0] * 0.66, 60)
-        tw = d.textlength(st["label"].upper(), font=fl); y = cy + fs * 0.5 + 70
+        fl, ls = fit(d, [st["label"].upper()], DISP, int(120 * Q) + 20, S[0] * 0.66, 60)
+        tw = d.textlength(st["label"].upper(), font=fl); y = cy + fs * 0.5 + 70 * Q
         lab = Image.new("RGBA", (int(tw) + 90, ls + 50), (0, 0, 0, 0)); dl = ImageDraw.Draw(lab)
         dl.rectangle((0, 0, lab.width - 1, lab.height - 1), fill=RED + (255,)); dl.text((lab.width / 2, lab.height / 2 + 4), st["label"].upper(), font=fl, fill="white", anchor="mm")
         paste_rot(bg, lab, -3, S[0] / 2, y + lab.height / 2, shadow=False)
@@ -176,7 +178,7 @@ def g_stat(bg, sc, prog):
 def g_timeline(bg, sc, prog):
     """Two moments joined by a line that grows; the last build shows the distance between them."""
     tl = sc["timeline"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.47; x0, x1 = S[0] * 0.16, S[0] * 0.84
-    ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, 190, S[0] * 0.30, 80)
+    ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, int(190 * Q) + 20, S[0] * 0.30, 80)
     d.line((x0, cy, x1, cy), fill=(90, 90, 96), width=6)
     xe = x0 + (x1 - x0) * min(1, prog * 1.2)
     d.line((x0, cy, xe, cy), fill=RED, width=14)
@@ -184,8 +186,8 @@ def g_timeline(bg, sc, prog):
     if xe >= x1:
         d.line((x1, cy - 46, x1, cy + 46), fill="white", width=8); d.text((x1, cy + 70), tl["to"].upper(), font=ft, fill="white", anchor="ma")
     if tl.get("label") and prog >= 1:
-        fl, _ = fit(d, [tl["label"].upper()], DISP, 300, S[0] * 0.74, 110)
-        d.text((S[0] / 2, cy - 250), tl["label"].upper(), font=fl, fill=RED, anchor="mm")
+        fl, _ = fit(d, [tl["label"].upper()], DISP, int(300 * Q), S[0] * 0.74, 110)
+        d.text((S[0] / 2, cy - 250 * Q), tl["label"].upper(), font=fl, fill=RED, anchor="mm")
 
 
 def still(i, sc, img=None, k=0, ns=1):
@@ -225,6 +227,7 @@ def ts(t):
 
 
 CAPFONT, CAPSIZE, HOOKSIZE = ("Bebas Neue", 118, 86) if DOC else ("Inter ExtraBold", 96, 70)
+CAPSIZE, HOOKSIZE, CAPMV, HOOKMV = (int(CAPSIZE * 0.72), int(HOOKSIZE * 0.72), 64, 44) if LONG else (CAPSIZE, HOOKSIZE, 470, 210)
 HOOKFG, HOOKBG = ("&H00FFFFFF", "&H002C2CDE") if DOC else ("&H00000000", "&H0000D4FF")
 
 
@@ -260,8 +263,8 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Cap,{CAPFONT},{CAPSIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,470,1
-Style: Hook,{CAPFONT},{HOOKSIZE},{HOOKFG},{HOOKFG},{HOOKBG},{HOOKBG},-1,0,0,0,100,100,0,0,3,18,0,8,90,90,210,1
+Style: Cap,{CAPFONT},{CAPSIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,{CAPMV},1
+Style: Hook,{CAPFONT},{HOOKSIZE},{HOOKFG},{HOOKFG},{HOOKBG},{HOOKBG},-1,0,0,0,100,100,0,0,3,18,0,8,90,90,{HOOKMV},1
 Style: Draft,Inter,34,&H00FFFFFF,&H00FFFFFF,&H000000C8,&H000000C8,-1,0,0,0,100,100,0,0,3,8,0,8,40,40,60,1
 
 [Events]
@@ -350,9 +353,9 @@ run(cmd)
 
 # thumbnail: first still + hook
 th = Image.open(first_still).resize((W, H)); d = ImageDraw.Draw(th)
-f = ImageFont.truetype(FONT, 110); y = 1180
+f = ImageFont.truetype(FONT, 110); y = int(H * 0.615)
 for ln in textwrap.wrap(script["hook_text"].upper(), 14):
-    d.text((W / 2, y), ln, font=f, fill=(255, 212, 0), anchor="ma", stroke_width=10, stroke_fill="black"); y += 128
+    d.text((W / 2, y), ln, font=f, fill="white" if DOC else (255, 212, 0), anchor="ma", stroke_width=10, stroke_fill="black"); y += 128
 th.convert("RGB").save(path(*odir, "thumbnail.jpg"), quality=90)
 
 research = load(wd("research.json"), {"images": []})
@@ -362,7 +365,12 @@ desc = script["description"].strip() + "\n\nFuentes:\n" + "\n".join(script["sour
 if credits:
     desc += "\n\nImágenes (Wikimedia Commons):\n" + "\n".join(credits)
 desc += "\n\nNarración generada con voz sintética (ElevenLabs).\n\n" + " ".join(script["hashtags"])
-save(path(*odir, "metadata.json"), {"title": script["title"], "description": desc, "hashtags": script["hashtags"],
+save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "title": script["title"], "description": desc, "hashtags": script["hashtags"],
                                     "duration": timing["duration"], "draft": draft, "trend": script["trend"],
                                     "synthetic_voice_disclosure": True, "image_credits": credits})
+if not LONG and not draft:  # TikTok takes the same vertical file; only the caption differs
+    import shutil
+    shutil.copy(video, path(*odir, "tiktok.mp4"))
+    tags = " ".join(h for h in script["hashtags"] if h.lower() != "#shorts")
+    open(path(*odir, "tiktok.txt"), "w", encoding="utf-8").write(f"{script['title']}\n\n{script['description'].strip()}\n\n{tags} #fyp #parati\n")
 print(f"{'DRAFT ' if draft else ''}rendered {video} ({timing['duration']:.1f}s)")
