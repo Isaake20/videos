@@ -99,6 +99,6 @@ for si in range(len(texts)):
 for i in range(len(scenes) - 1):  # cut on the midpoint of the pause between scenes
     scenes[i]["end"] = scenes[i + 1]["start"] = round((scenes[i]["end"] + scenes[i + 1]["start"]) / 2, 3)
 scenes[0]["start"] = 0.0; scenes[-1]["end"] = round(words[-1]["e"] + 0.6, 3)
-save(path("work", slug, "timing.json"), {"draft": draft, "duration": scenes[-1]["end"], "chars": len(full),
+save(path("work", slug, "timing.json"), {"draft": draft, "duration": scenes[-1]["end"], "chars": len(full), "voice_id": (vid if not draft else None),
                                          "words": words, "scenes": scenes})
 print(f"{'DRAFT ' if draft else ''}voice: {scenes[-1]['end']:.1f}s, {len(words)} words, {len(full)} chars")

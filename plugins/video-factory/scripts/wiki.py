@@ -43,7 +43,7 @@ for title in titles:
             seen.add(p["title"])
             if n >= (30 if slug.endswith("-largo") else 10) or not OK.match(lic) or ii.get("width", 0) < 700:
                 continue  # only reusable licences, only usable resolution
-            author = re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", "desconocido")).strip()[:80]
+            author = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", md.get("Artist", {}).get("value", "desconocido"))).strip()[:160]
             n += 1
             fn = f"img/{n:02d}.jpg"
             time.sleep(1.5)  # Wikimedia rate limits bursts

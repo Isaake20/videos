@@ -167,10 +167,12 @@ def g_doc(bg, sc, prog):
 def g_stat(bg, sc, prog):
     """A huge figure with a small heading; the last build turns it red and stamps the label."""
     st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.43
-    if st.get("over"):
-        fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
-        d.text((S[0] / 2, cy - 330 * Q), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
     f, fs = fit(d, [st["value"].upper()], DISP, int(620 * Q), S[0] * 0.76, 160)
+    if st.get("over"):  # keep the small heading clear of the tallest glyph (accents such as the tilde of Ñ)
+        fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
+        top = d.textbbox((S[0] / 2, cy), st["value"].upper(), font=f, anchor="mm")[1]
+        ob = d.textbbox((0, 0), st["over"].upper(), font=fo, anchor="mm")
+        d.text((S[0] / 2, min(cy - 330 * Q, top - 46 - (ob[3] - ob[1]) / 2)), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
     d.text((S[0] / 2, cy), st["value"].upper(), font=f, fill=RED if prog >= 1 else "white", anchor="mm")
     if st.get("label") and prog >= 0.6:
         fl, ls = fit(d, [st["label"].upper()], DISP, int(120 * Q) + 20, S[0] * 0.66, 60)
