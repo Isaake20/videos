@@ -15,5 +15,14 @@
     "chars": 991,
     "output": "output/2026-11-16-mensaje-arecibo-respuesta",
     "format": "short"
+  },
+  {
+    "date": "2026-11-16",
+    "slug": "mensaje-arecibo-respuesta-largo",
+    "title": "Mensaje de Arecibo: 1.679 bits y una respuesta imposible",
+    "topic_key": "mensaje de arecibo",
+    "chars": 9659,
+    "output": "output/2026-11-16-mensaje-arecibo-respuesta-largo",
+    "format": "long"
   }
 ]
