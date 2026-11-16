@@ -49,7 +49,10 @@ def base(img):
 def draw(im, text, st):
     d = ImageDraw.Draw(im); lines = textwrap.wrap(text.upper(), 10)
     fs = 230 if max(map(len, lines)) <= 7 else 170
-    f = ImageFont.truetype(FONT, fs); y = int(H * st["y"])
+    f = ImageFont.truetype(FONT, fs)
+    while fs > 80 and max(d.textlength(ln, font=f) for ln in lines) > W - 200:  # keep a safe margin on both sides
+        fs -= 10; f = ImageFont.truetype(FONT, fs)
+    y = int(H * st["y"])
     for ln in lines:
         if st["band"]:
             x0, y0, x1, y1 = d.textbbox((W / 2, y), ln, font=f, anchor="ma")
