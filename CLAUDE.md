@@ -5,7 +5,7 @@ Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: 
 ## Cómo trabajar aquí
 - Un ciclo completo es `/produce-video` (ver `plugins/video-factory/commands/produce-video.md`). Se ejecuta **sin pedir aprobación**: decide, produce y deja el resultado en `output/`.
 - Usa siempre los agentes (`trend-scout`, `channel-analyst`, `scriptwriter`, `qa-reviewer`, `producer`, `thumbnail-maker`, `publisher`, `retention-analyst`, `community-manager`) y sus skills; no hagas su trabajo a mano.
-- YouTube: el cliente OAuth es un secreto de red para `oauth2.googleapis.com`; el token de refresco está en la variable `YT_REFRESH_TOKEN`. Ninguno se pide ni se escribe en el chat.
+- YouTube: las credenciales están en las variables de entorno `YT_CLIENT_ID`, `YT_CLIENT_SECRET` y `YT_REFRESH_TOKEN` (o el cliente como secreto de red de `oauth2.googleapis.com`). Ninguna se pide ni se escribe en el chat.
 - Ejecuta los scripts desde la raíz: `python3 plugins/video-factory/scripts/<script>.py`.
 - La clave de ElevenLabs la inyecta el proxy del entorno para `api.elevenlabs.io`; no existe como variable y no se pide en el chat.
 

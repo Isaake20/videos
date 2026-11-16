@@ -47,10 +47,12 @@ Sin esto el ciclo funciona igual, pero los vídeos se quedan en `output/`.
 
 1. En Google Cloud: crea un proyecto, activa **YouTube Data API v3** y **YouTube Analytics API**, configura la pantalla de consentimiento y pásala a **producción** (en modo prueba el token caduca a los 7 días), y crea un cliente OAuth de tipo "Aplicación de escritorio".
 2. Obtén un token de refresco para la cuenta del canal con estos permisos: `https://www.googleapis.com/auth/youtube.upload`, `https://www.googleapis.com/auth/youtube.force-ssl`, `https://www.googleapis.com/auth/yt-analytics.readonly`.
-3. En el entorno `video-factory`:
-   - Secreto de red para `oauth2.googleapis.com`, tipo usuario/contraseña (Basic): usuario = ID de cliente, contraseña = secreto de cliente.
-   - Variable de entorno `YT_REFRESH_TOKEN` con el token de refresco.
-   - Hosts permitidos: `www.googleapis.com`, `youtubeanalytics.googleapis.com`.
+3. En el entorno `video-factory` → Editar → **Variables de entorno**, tres líneas:
+   - `YT_CLIENT_ID` = ID de cliente
+   - `YT_CLIENT_SECRET` = secreto de cliente
+   - `YT_REFRESH_TOKEN` = token de refresco
+
+   (Alternativa más protegida para el cliente: en vez de las dos primeras variables, un secreto de red para `oauth2.googleapis.com` de tipo usuario/contraseña.) Hosts permitidos: `oauth2.googleapis.com`, `www.googleapis.com`, `youtubeanalytics.googleapis.com`.
 4. Comprueba: `python3 plugins/video-factory/scripts/youtube.py check`.
 
 Aviso de YouTube: los vídeos subidos por API desde un proyecto de Google Cloud **sin auditar** quedan bloqueados como privados. Para que salgan públicos hay que pasar la auditoría de cumplimiento de la API de YouTube.

@@ -9,9 +9,9 @@ usage:
   youtube.py analytics [days]              per-video numbers -> state/analytics.json
   youtube.py retention <video-id>          audience retention curve of one video
 
-Auth: the OAuth client (id + secret) lives outside the sandbox as a network secret for
-oauth2.googleapis.com (Basic auth, injected by the proxy). Only the refresh token is read here,
-from the environment variable YT_REFRESH_TOKEN. Exit code 3 = credentials missing or rejected.
+Auth: the refresh token is read from the environment variable YT_REFRESH_TOKEN. The OAuth client is either
+the environment variables YT_CLIENT_ID + YT_CLIENT_SECRET, or a network secret for oauth2.googleapis.com
+(Basic auth, injected by the proxy). Exit code 3 = credentials missing or rejected.
 """
 import datetime as dt, json, os, sys, urllib.error, urllib.parse, urllib.request
 from common import load, save, path, die, UA
@@ -47,7 +47,10 @@ def token():
     rt = os.environ.get("YT_REFRESH_TOKEN")
     if not rt:
         die("YT_REFRESH_TOKEN is not set: YouTube is not connected yet (see README, 'Conectar YouTube')", 3)
-    body = urllib.parse.urlencode({"grant_type": "refresh_token", "refresh_token": rt}).encode()
+    form = {"grant_type": "refresh_token", "refresh_token": rt}
+    if os.environ.get("YT_CLIENT_ID") and os.environ.get("YT_CLIENT_SECRET"):  # client kept as environment variables
+        form.update(client_id=os.environ["YT_CLIENT_ID"], client_secret=os.environ["YT_CLIENT_SECRET"])
+    body = urllib.parse.urlencode(form).encode()
     r = call("https://oauth2.googleapis.com/token", body, {"Content-Type": "application/x-www-form-urlencoded"})
     _token = r.get("access_token") or die("token endpoint returned no access_token", 3)
     return _token
