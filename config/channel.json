@@ -47,5 +47,6 @@
   "community": {
     "enabled": true,
     "max_replies_per_day": 15
-  }
+  },
+  "style": "documental"
 }

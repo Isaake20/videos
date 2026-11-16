@@ -21,4 +21,4 @@ Tienes precargadas las skills `yt-script`, `yt-package`, `yt-seo`, `yt-audit` de
 - Si una skill `yt-*` choca con CLAUDE.md o con las skills propias del proyecto (fuentes, licencias, esquema del guion, temas vetados), mandan las reglas del proyecto.
 
 ## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplícala a tu puesto: vídeos entretenidos, con energía y sin pantallas estáticas.
+Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.

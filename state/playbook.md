@@ -32,11 +32,20 @@ Fuente: `state/channels.json` — últimos ~15 vídeos de 7 canales de referenci
 ## Límite del análisis
 El feed público solo da 15 vídeos por canal y vistas totales; no hay retención ni CTR. Son indicios, no pruebas.
 
-## Dirección del propietario (2026-11-16): vídeos vivos, no fríos
-El primer vídeo salió con voz sosa y pantallas estáticas. Desde ahora, para todos los puestos:
-- **Voz** rápida y con energía ("M - voz ágil"); guion escrito para decirse con ganas.
-- **Movimiento constante**: cortes cada ~2 s, fondos de color vivo, imágenes como pegatinas, subtítulos que saltan, efectos de sonido y barra de progreso.
-- **Tono entretenido**: sorpresa, contraste, humor que sale del dato, una pregunta al espectador. Nada de tono de enciclopedia.
-- **Material visual de sobra**: 8 o más imágenes por vídeo; varias por escena larga (`images`).
-- **Temas**: a igualdad de señal, gana el que tenga más imágenes llamativas y una historia con giro.
-- Referencias del propietario (solo se estudia el estilo, no se copia nada): cortos con personajes animados, colores planos intensos y texto grande en pantalla.
+## Dirección del propietario (2026-11-16): estilo documental con gráficos animados
+El propietario pasó un vídeo de referencia y quiere que todos los vídeos se parezcan a él **en el formato**. Se estudia el formato; no se copian su guion, su tema, sus imágenes ni sus personas. Los temas vetados (`avoid_topics`: muertes recientes, personas privadas…) siguen vetados aunque la referencia sea un caso judicial.
+
+**Qué hace la referencia (medido)**
+- Fondo casi negro, tipografía condensada blanca en mayúsculas y un solo color de acento: rojo.
+- **Cada frase tiene su propio gráfico**, nunca una foto quieta: fecha grande, documento mecanografiado con una frase marcada en rojo, cifra gigante, relojes y línea de tiempo con la diferencia en rojo, foto tipo expediente con etiqueta, palabra clave sola en pantalla.
+- Los gráficos se **construyen por pasos** (aparece el papel, se escribe el texto, se marca el dato).
+- Narración a 2,6 palabras por segundo, frases de 4 a 12 palabras, tono de intriga sobrio.
+- Estructura: gancho con una cifra exacta y algo sin resolver → fecha y lugar → versión oficial → "pero hay algo que no cierra" → dos o tres pruebas, cada una con su gráfico → el dato que lo cambia todo → cierre con pregunta para comentarios.
+
+**Cómo lo aplicamos, por puesto**
+- **Radar**: a igualdad de señal, gana el tema con un misterio o una contradicción ("lo que no encaja") y con fechas, cifras y documentos que se puedan enseñar.
+- **Guionista**: escribe con esa estructura y da a cada escena un gráfico (`doc`, `stat`, `timeline`, `card` o foto con `label`). Máximo dos escenas seguidas del mismo tipo. Todo texto en pantalla sale de la investigación.
+- **Control de calidad**: rechaza si falta la intriga, si hay tres escenas seguidas del mismo tipo de gráfico, si un texto en pantalla no está respaldado o si un plano no cambia en más de 3 s.
+- **Locutor y Animador**: voz "M - voz ágil" (decisión del propietario: no se cambia); `config/channel.json → style: "documental"`; música tensa y sobria, no alegre.
+- **Miniaturista**: fondo oscuro, texto blanco o rojo, una cifra o una palabra.
+- **Studio, Retención, Comunidad**: mismo tono sobrio en títulos, descripciones y respuestas; sin exclamaciones de relleno.

@@ -15,10 +15,10 @@ W, H = 1080, 1920
 wd = lambda *a: path("work", slug, *a)
 FONT = next(f for f in ("/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf",
                         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf") if os.path.exists(f))
-STYLES = [dict(fill=(255, 212, 0), stroke="black", y=0.66, band=None),
-          dict(fill="white", stroke="black", y=0.12, band=None),
-          dict(fill="black", stroke=None, y=0.70, band=(255, 212, 0)),
-          dict(fill="white", stroke=None, y=0.70, band=(220, 30, 60))]
+STYLES = [dict(fill="white", stroke="black", y=0.66, band=None),  # documentary look: dark, white and red
+          dict(fill="white", stroke=None, y=0.70, band=(222, 44, 44)),
+          dict(fill=(222, 44, 44), stroke="black", y=0.12, band=None),
+          dict(fill="black", stroke=None, y=0.70, band=(236, 230, 214))]
 
 if args[:1] == ["--pick"]:
     n = int(args[1]); src = wd("thumbs", f"{n:02d}.jpg")
@@ -38,7 +38,7 @@ for t in texts:
 
 def base(img):
     im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
-    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(30)).point(lambda v: v * 0.5)
+    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(30)).point(lambda v: v * 0.28)
     fg = ImageOps.contain(im, (W, int(H * 0.55)))
     if fg.width < W * 0.8:
         fg = ImageOps.fit(im, (W, int(H * 0.55)), centering=(0.5, 0.3))

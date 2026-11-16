@@ -15,17 +15,25 @@ description: Estructura, estilo y esquema JSON del guion de un Short narrado de 
 
 ## Estilo
 - Español neutro, frases de menos de 12 palabras, voz activa, tuteo.
-- Tono entretenido, no de enciclopedia: habla como quien le cuenta algo increíble a un amigo. Sorpresa, contraste y una pizca de humor que salga del propio dato; al menos una pregunta directa al espectador a mitad de vídeo. La voz del canal es rápida y enérgica: escribe frases que se puedan decir con ganas.
+- Tono de intriga, no de enciclopedia: plantea algo que no encaja y ve soltando pruebas. Frases secas, de 4 a 12 palabras. Usa un "pero" que gire la historia hacia la mitad y termina con una pregunta para comentarios. Sin chistes de relleno ni exclamaciones.
 - Escribe para el oído: números en palabras si son cortos ("ocho mil millones"), sin paréntesis ni siglas sin explicar.
 - Una idea por escena; cada escena cambia la imagen. El vídeo no puede tener pantallas estáticas: el render corta cada ~2 s, así que dale material.
 - `hook_text` (máx. 9 palabras) repite el gancho en pantalla: mucha gente ve el primer segundo sin sonido.
 - Nada de exageraciones que el dato no sostenga ("nadie lo sabe", "te va a volar la cabeza").
 
-## Visual de cada escena
-- `image`: un archivo de `work/<slug>/img/` (míralo antes: que sea reconocible y encaje con lo que se dice).
-- o `images`: lista de 2-4 archivos para una escena de más de 4 s; se muestran en cortes rápidos. Úsalo en las escenas largas siempre que tengas imágenes pertinentes.
-- o `card`: 1-4 palabras o una cifra enorme ("8.000 MILLONES") cuando el dato *es* el visual. Usa 1-3 tarjetas por vídeo, nunca dos seguidas si puedes evitarlo.
-- Pide a `wiki.py` artículos de sobra para tener al menos 8 imágenes útiles; un vídeo con menos de 5 imágenes distintas queda frío.
+## Visual de cada escena (estilo documental)
+Cada escena lleva **un** gráfico. El render lo construye por pasos y corta cada ~2 s. Varía: máximo dos escenas seguidas del mismo tipo.
+| Campo | Qué se ve | Cuándo usarlo |
+|---|---|---|
+| `stat`: `{"over": "rótulo pequeño", "value": "11,5 KG", "label": "sello rojo"}` | Cifra o palabra gigante que se pone roja y recibe un sello | El dato *es* el visual: cifras, fechas, un símbolo |
+| `doc`: `{"label": "tipo de documento", "text": "1-2 frases cortas", "highlight": "trozo exacto del text"}` | Hoja mecanografiada que se escribe y marca en rojo el `highlight` | Versiones oficiales, citas de la fuente, registros |
+| `timeline`: `{"from": "1448", "to": "HOY", "label": "MÁS DE 5 SIGLOS"}` | Línea que crece entre dos momentos y la distancia en rojo | Tiempo entre dos hechos |
+| `card`: `"2-4 PALABRAS"` | Palabras que aparecen una a una, la última en rojo | La frase que da el giro |
+| `image` + `label` opcional | Foto tipo expediente con etiqueta mecanografiada | Solo si la imagen muestra de verdad lo que se narra |
+| `images`: 2-4 archivos | Varias fotos en cortes rápidos | Escenas de más de 4 s con material |
+
+- Todo texto en pantalla (`value`, `text`, `label`, `card`) debe estar respaldado por `research.json`: es un dato más. El `highlight` debe aparecer tal cual dentro de `text`.
+- Mira cada imagen con Read antes de usarla. Si no hay imagen correcta, usa `doc` o `stat`: mejor un gráfico que una foto que no corresponde.
 - No repitas la misma imagen.
 
 ## Esquema
@@ -36,8 +44,11 @@ description: Estructura, estilo y esquema JSON del guion de un Short narrado de 
   "hook_text": "Máx. 9 palabras",
   "trend": {"topic": "tema tal como aparece en trends.json", "source": "wikipedia_top", "why_now": "..."},
   "scenes": [
-    {"text": "Narración de la escena.", "image": "img/03.jpg"},
-    {"text": "Otra escena.", "card": "1999"}
+    {"text": "Gancho con cifra exacta.", "stat": {"over": "Rótulo", "value": "33 MIN", "label": "Sin explicar"}},
+    {"text": "Lo que dice la fuente.", "doc": {"label": "Informe oficial", "text": "Frase corta de la fuente.", "highlight": "corta"}},
+    {"text": "Lo que se ve.", "image": "img/03.jpg", "label": "Etiqueta de la foto"},
+    {"text": "Cuánto pasó entre dos hechos.", "timeline": {"from": "1448", "to": "1971", "label": "523 AÑOS"}},
+    {"text": "El giro.", "card": "NADIE LO USABA"}
   ],
   "music_prompt": "Descripción en inglés de la música de fondo: género, tempo, ánimo",
   "description": "2-3 frases para la descripción del vídeo.",

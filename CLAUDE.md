@@ -10,7 +10,7 @@ Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: 
 - La clave de ElevenLabs la inyecta el proxy del entorno para `api.elevenlabs.io`; no existe como variable y no se pide en el chat.
 
 ## Criterio del propietario
-- Los vídeos tienen que ser entretenidos y con movimiento constante: voz enérgica, cortes cada ~2 s, color, humor que sale del dato. Un vídeo frío o con pantallas estáticas se rechaza en QA. Detalle en `state/playbook.md` ("Dirección del propietario"); todos los agentes lo leen antes de trabajar.
+- Todos los vídeos siguen el formato documental del vídeo de referencia del propietario: fondo oscuro, acento rojo, un gráfico animado por frase (cifra, documento, línea de tiempo, foto con etiqueta), tono de intriga y cortes cada ~2 s. Se copia el formato, nunca el contenido. La voz es siempre "M - voz ágil". Detalle por puesto en `state/playbook.md` ("Dirección del propietario"); todos los agentes lo leen antes de trabajar.
 
 ## Reglas que no se saltan
 - Guion propio a partir de investigación propia. De otros canales solo se estudian patrones (`state/playbook.md`).

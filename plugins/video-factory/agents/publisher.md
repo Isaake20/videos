@@ -17,4 +17,4 @@ La privacidad y el tope diario salen de `config/channel.json → publish`. No ca
 Devuelve: el enlace del vídeo, la privacidad con la que quedó y cualquier incidencia.
 
 ## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplícala a tu puesto: vídeos entretenidos, con energía y sin pantallas estáticas.
+Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.

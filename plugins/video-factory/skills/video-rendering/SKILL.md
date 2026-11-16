@@ -8,8 +8,8 @@ description: Cómo funciona y cómo depurar el render vertical 1080x1920 (ffmpeg
 
 ## Qué hace `render.py`
 - Nada de pantallas estáticas: cada escena se corta en planos de ~2 s, cada uno con otro encuadre (acercar, alejar, barrido a izquierda o derecha) y un pequeño golpe de zoom en el corte. Si la escena trae `images` (2-4 archivos), los planos alternan esas imágenes.
-- Fondo de color vivo distinto en cada plano; la imagen va como "pegatina" inclinada con borde blanco y sombra; las escenas `card` llevan texto gigante sobre el mismo tipo de fondo.
-- Efectos de sonido sintetizados (barrido en cada cambio de escena, toque en los cortes internos, "pop" en las tarjetas) y barra de progreso amarilla abajo.
+- Estilo `documental` (`config/channel.json → style`): fondo casi negro, tipografía Bebas Neue en blanco, acento rojo, texto mecanografiado en Special Elite (fuentes en `plugins/video-factory/assets/fonts/`). Cada escena es un gráfico (`stat`, `doc`, `timeline`, `card`, foto con `label`) que se construye por pasos, uno por plano. El estilo anterior de colores vivos sigue disponible con `style: "color"`.
+- Efectos de sonido sintetizados (barrido en cada cambio de escena, toque en los cortes internos, "pop" en las tarjetas) y barra de progreso abajo (roja en documental).
 - Los cortes caen en la pausa entre escenas según `timing.json`.
 - Subtítulos ASS: bloques de hasta 3 palabras en el tercio inferior, la palabra que suena resaltada en amarillo.
 - `hook_text` en una banda amarilla arriba durante los primeros ~3,5 s.

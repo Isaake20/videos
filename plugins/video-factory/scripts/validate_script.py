@@ -28,8 +28,14 @@ for i, sc in enumerate(scenes, 1):
     for im in (sc.get("images") or ([sc["image"]] if sc.get("image") else [])):
         if not os.path.exists(os.path.join(wdir, im)):
             errs.append(f"scene {i}: image {im} not found")
-    if not sc.get("image") and not sc.get("images") and not sc.get("card"):
-        errs.append(f"scene {i}: needs 'image', 'images' (2-3 files shown in quick cuts) or 'card' (big on-screen text)")
+    if not any(sc.get(k) for k in ("image", "images", "card", "doc", "stat", "timeline")):
+        errs.append(f"scene {i}: needs a visual: 'image', 'images', 'card', 'doc', 'stat' or 'timeline'")
+    if sc.get("doc") and not (isinstance(sc["doc"], dict) and sc["doc"].get("text")):
+        errs.append(f"scene {i}: doc needs {{label, text, highlight}}")
+    if sc.get("stat") and not (isinstance(sc["stat"], dict) and sc["stat"].get("value")):
+        errs.append(f"scene {i}: stat needs {{over, value, label}}")
+    if sc.get("timeline") and not (isinstance(sc["timeline"], dict) and sc["timeline"].get("from") and sc["timeline"].get("to")):
+        errs.append(f"scene {i}: timeline needs {{from, to, label}}")
     if len(sc.get("images") or []) > 4:
         errs.append(f"scene {i}: at most 4 images per scene")
 if len(s.get("hook_text", "").split()) > 9:

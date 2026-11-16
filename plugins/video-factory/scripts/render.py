@@ -54,31 +54,178 @@ def sticker(im, angle):
     return sh
 
 
-def still(i, sc, img=None, k=0):
-    bg = backdrop(i + k)
-    if img:
-        im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
-        st = sticker(im, (2.5, -2.5, 1.5, -1.5)[(i + k) % 4])
-        bg.alpha_composite(st, ((S[0] - st.width) // 2, int(S[1] * 0.44) - st.height // 2))
+cfg = load(path("config", "channel.json"), {})
+DOC = cfg.get("style", "documental") == "documental"
+FDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "fonts")
+DISP = os.path.join(FDIR, "BebasNeue-Regular.ttf") if os.path.exists(os.path.join(FDIR, "BebasNeue-Regular.ttf")) else FONT
+TYPE = os.path.join(FDIR, "SpecialElite-Regular.ttf") if os.path.exists(os.path.join(FDIR, "SpecialElite-Regular.ttf")) else FONT
+RED, PAPER, INK = (222, 44, 44), (236, 230, 214), (28, 26, 24)
+KINDS = ("doc", "stat", "timeline", "card")
+
+
+def fit(d, text_lines, font_path, size, maxw, minsize=70):
+    f = ImageFont.truetype(font_path, size)
+    while size > minsize and max(d.textlength(ln, font=f) for ln in text_lines) > maxw:
+        size -= 8; f = ImageFont.truetype(font_path, size)
+    return f, size
+
+
+def wrap_px(d, text, f, maxw):
+    lines, cur = [], ""
+    for w in text.split():
+        if cur and d.textlength(cur + " " + w, font=f) > maxw:
+            lines.append(cur); cur = w
+        else:
+            cur = (cur + " " + w).strip()
+    return lines + ([cur] if cur else [])
+
+
+def dark(i):
+    """Documentary backdrop: near-black with a soft spotlight and a few thin light rays."""
+    g = Image.radial_gradient("L").resize(S)
+    bg = Image.composite(Image.new("RGB", S, (10, 10, 12)), Image.new("RGB", S, (44, 44, 50)), g).convert("RGBA")
+    ov = Image.new("RGBA", S, (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
+    for k in range(5):
+        x = (0.13 + 0.19 * k + 0.07 * (i % 3)) * S[0]
+        d.line((x, 0, x - S[0] * 0.35 * (1 if (i + k) % 2 else -1), S[1]), fill=(255, 255, 255, 10), width=3)
+    return Image.alpha_composite(bg, ov)
+
+
+def paste_rot(bg, layer, angle, cx, cy, shadow=True):
+    layer = layer.rotate(angle, expand=True, resample=Image.BICUBIC)
+    if shadow:
+        sh = Image.new("RGBA", (layer.width + 160, layer.height + 160), (0, 0, 0, 0))
+        sh.paste((0, 0, 0, 190), (80, 100), layer.split()[3]); sh = sh.filter(ImageFilter.GaussianBlur(34))
+        bg.alpha_composite(sh, (int(cx - sh.width / 2), int(cy - sh.height / 2)))
+    bg.alpha_composite(layer, (int(cx - layer.width / 2), int(cy - layer.height / 2)))
+
+
+def g_photo(bg, sc, img, i, k):
+    """A picture as an evidence photo: white frame, slight tilt, optional typewriter label."""
+    im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
+    fg = ImageOps.contain(im, (int(S[0] * 0.74), int(S[1] * 0.46)))
+    if fg.width < S[0] * 0.55:
+        fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.46)), centering=(0.5, 0.3))
+    fg = Image.blend(fg, ImageOps.grayscale(fg).convert("RGB"), 0.35)
+    m, foot = 26, 120 if sc.get("label") else 26
+    card = Image.new("RGBA", (fg.width + 2 * m, fg.height + m + foot), PAPER + (255,))
+    card.paste(fg, (m, m))
+    if sc.get("label"):
+        d = ImageDraw.Draw(card); f, _ = fit(d, [sc["label"]], TYPE, 58, card.width - 80, 30)
+        d.text((card.width / 2, fg.height + m + foot / 2), sc["label"], font=f, fill=INK, anchor="mm")
+    paste_rot(bg, card, (2.5, -2.5, 1.5, -1.5)[(i + k) % 4], S[0] / 2, S[1] * 0.44)
+    d = ImageDraw.Draw(bg); d.rectangle((S[0] * 0.5 - 70, S[1] * 0.44 - card.height / 2 - 34, S[0] * 0.5 + 70, S[1] * 0.44 - card.height / 2 + 30), fill=RED + (235,))
+
+
+def g_card(bg, sc, prog):
+    """Kinetic title: words appear build by build; the last build adds the red rule."""
+    d = ImageDraw.Draw(bg); words = sc["card"].upper().split()
+    full = textwrap.wrap(" ".join(words), 11) or [""]
+    f, fs = fit(d, full, DISP, 560 if len(sc["card"]) <= 3 else 400, S[0] * 0.74, 110)
+    shown = max(1, round(len(words) * prog)); y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
+    for ln in full:
+        x = S[0] / 2 - d.textlength(ln, font=f) / 2
+        for w in ln.split():
+            n += 1
+            if n <= shown:
+                d.text((x, y), w, font=f, fill=RED if (n == len(words) and prog >= 1 and len(words) > 1) else "white")
+            x += d.textlength(w + " ", font=f)
+        y += fs * 1.0
+    if prog >= 1:
+        d.rectangle((S[0] * 0.36, y + 24, S[0] * 0.64, y + 40), fill=RED)
+
+
+def g_doc(bg, sc, prog):
+    """A typed document: label, typewriter text appearing in steps, then a red marker on the key phrase."""
+    doc = sc["doc"]; w, h = int(S[0] * 0.72), int(S[1] * 0.42)
+    card = Image.new("RGBA", (w, h), PAPER + (255,)); d = ImageDraw.Draw(card)
+    fl = ImageFont.truetype(TYPE, 46); d.text((70, 64), doc.get("label", "").upper(), font=fl, fill=(110, 104, 96))
+    d.line((70, 132, w - 70, 132), fill=(150, 144, 134), width=3)
+    size = 96; f = ImageFont.truetype(TYPE, size); lines = wrap_px(d, doc["text"], f, w - 140)
+    while size > 54 and len(lines) * size * 1.35 > h - 240:
+        size -= 6; f = ImageFont.truetype(TYPE, size); lines = wrap_px(d, doc["text"], f, w - 140)
+    total = sum(len(x) for x in lines); left = max(3, round(total * min(1, prog * 1.25))); y = 180
+    hl = (doc.get("highlight") or "").lower()
+    for ln in lines:
+        part = ln[:left]; left -= len(part)
+        if hl and prog >= 1 and hl in ln.lower():
+            s0 = ln.lower().index(hl); x0 = 70 + d.textlength(ln[:s0], font=f); x1 = x0 + d.textlength(ln[s0:s0 + len(hl)], font=f)
+            d.rectangle((x0 - 8, y - 6, x1 + 8, y + size * 1.05), fill=(230, 60, 60, 255))
+        d.text((70, y), part, font=f, fill=INK); y += size * 1.35
+        if left <= 0:
+            break
+    paste_rot(bg, card, -2.0, S[0] / 2, S[1] * 0.44)
+
+
+def g_stat(bg, sc, prog):
+    """A huge figure with a small heading; the last build turns it red and stamps the label."""
+    st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.43
+    if st.get("over"):
+        fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
+        d.text((S[0] / 2, cy - 330), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
+    f, fs = fit(d, [st["value"].upper()], DISP, 620, S[0] * 0.76, 160)
+    d.text((S[0] / 2, cy), st["value"].upper(), font=f, fill=RED if prog >= 1 else "white", anchor="mm")
+    if st.get("label") and prog >= 0.6:
+        fl, ls = fit(d, [st["label"].upper()], DISP, 120, S[0] * 0.66, 60)
+        tw = d.textlength(st["label"].upper(), font=fl); y = cy + fs * 0.5 + 70
+        lab = Image.new("RGBA", (int(tw) + 90, ls + 50), (0, 0, 0, 0)); dl = ImageDraw.Draw(lab)
+        dl.rectangle((0, 0, lab.width - 1, lab.height - 1), fill=RED + (255,)); dl.text((lab.width / 2, lab.height / 2 + 4), st["label"].upper(), font=fl, fill="white", anchor="mm")
+        paste_rot(bg, lab, -3, S[0] / 2, y + lab.height / 2, shadow=False)
+
+
+def g_timeline(bg, sc, prog):
+    """Two moments joined by a line that grows; the last build shows the distance between them."""
+    tl = sc["timeline"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.47; x0, x1 = S[0] * 0.16, S[0] * 0.84
+    ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, 190, S[0] * 0.30, 80)
+    d.line((x0, cy, x1, cy), fill=(90, 90, 96), width=6)
+    xe = x0 + (x1 - x0) * min(1, prog * 1.2)
+    d.line((x0, cy, xe, cy), fill=RED, width=14)
+    d.line((x0, cy - 46, x0, cy + 46), fill="white", width=8); d.text((x0, cy + 70), tl["from"].upper(), font=ft, fill="white", anchor="ma")
+    if xe >= x1:
+        d.line((x1, cy - 46, x1, cy + 46), fill="white", width=8); d.text((x1, cy + 70), tl["to"].upper(), font=ft, fill="white", anchor="ma")
+    if tl.get("label") and prog >= 1:
+        fl, _ = fit(d, [tl["label"].upper()], DISP, 300, S[0] * 0.74, 110)
+        d.text((S[0] / 2, cy - 250), tl["label"].upper(), font=fl, fill=RED, anchor="mm")
+
+
+def still(i, sc, img=None, k=0, ns=1):
+    prog = (k + 1) / ns
+    if DOC:
+        bg = dark(i + k)
+        if img:
+            g_photo(bg, sc, img, i, k)
+        elif sc.get("doc"):
+            g_doc(bg, sc, prog)
+        elif sc.get("stat"):
+            g_stat(bg, sc, prog)
+        elif sc.get("timeline"):
+            g_timeline(bg, sc, prog)
+        else:
+            g_card(bg, sc, prog)
     else:
-        d = ImageDraw.Draw(bg)
-        lines = textwrap.wrap(sc["card"].upper(), 12)
-        fs = 520 if len(sc["card"]) <= 3 else 320
-        f = ImageFont.truetype(FONT, fs)
-        while fs > 90 and max(d.textlength(ln, font=f) for ln in lines) > S[0] * 0.74:
-            fs -= 10; f = ImageFont.truetype(FONT, fs)
-        y = int(S[1] * 0.44) - len(lines) * fs * 0.6
-        for ln in lines:
-            d.text((S[0] / 2 + 8, y + 10), ln, font=f, fill=(0, 0, 0, 140), anchor="ma")
-            d.text((S[0] / 2, y), ln, font=f, fill="white", anchor="ma", stroke_width=8, stroke_fill=(20, 20, 30))
-            y += fs * 1.15
-        wbar = int(S[0] * 0.30)
-        d.rounded_rectangle(((S[0] - wbar) // 2, y + 20, (S[0] + wbar) // 2, y + 46), 13, fill=(255, 212, 0))
+        bg = backdrop(i + k)
+        if img:
+            im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
+            st = sticker(im, (2.5, -2.5, 1.5, -1.5)[(i + k) % 4])
+            bg.alpha_composite(st, ((S[0] - st.width) // 2, int(S[1] * 0.44) - st.height // 2))
+        else:
+            d = ImageDraw.Draw(bg)
+            txt = sc.get("card") or (sc.get("stat") or {}).get("value") or (sc.get("timeline") or {}).get("label") or (sc.get("doc") or {}).get("highlight") or ""
+            lines = textwrap.wrap(txt.upper(), 12) or [""]
+            f, fs = fit(d, lines, FONT, 520 if len(txt) <= 3 else 320, S[0] * 0.74, 90)
+            y = int(S[1] * 0.44) - len(lines) * fs * 0.6
+            for ln in lines:
+                d.text((S[0] / 2, y), ln, font=f, fill="white", anchor="ma", stroke_width=8, stroke_fill=(20, 20, 30)); y += fs * 1.15
+            d.rounded_rectangle((S[0] * 0.35, y + 20, S[0] * 0.65, y + 46), 13, fill=(255, 212, 0))
     p = wd("render", f"s{i:02d}_{k}.png"); bg.convert("RGB").save(p); return p
 
 
 def ts(t):
     return f"{int(t // 3600)}:{int(t % 3600 // 60):02d}:{t % 60:05.2f}"
+
+
+CAPFONT, CAPSIZE, HOOKSIZE = ("Bebas Neue", 118, 86) if DOC else ("Inter ExtraBold", 96, 70)
+HOOKFG, HOOKBG = ("&H00FFFFFF", "&H002C2CDE") if DOC else ("&H00000000", "&H0000D4FF")
 
 
 def captions():
@@ -94,7 +241,7 @@ def captions():
         end = min(ch[-1]["e"] + 0.25, chunks[ci + 1][0]["s"]) if ci + 1 < len(chunks) else ch[-1]["e"] + 0.3
         for k, w in enumerate(ch):
             a, b = w["s"], (ch[k + 1]["s"] if k + 1 < len(ch) else end)
-            hl = ("&H00D4FF&", "&H7CFF4D&")[ci % 2]  # yellow / green highlight (BGR)
+            hl = "&H2C2CDE&" if DOC else ("&H00D4FF&", "&H7CFF4D&")[ci % 2]  # red, or yellow / green (BGR)
             txt = " ".join(("{\\c" + hl + "}" + x["w"].upper() + "{\\c&HFFFFFF&}") if j == k else x["w"].upper()
                            for j, x in enumerate(ch))
             sc0 = 80 if k == 0 else 108
@@ -113,8 +260,8 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Cap,Inter ExtraBold,96,&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,470,1
-Style: Hook,Inter ExtraBold,70,&H00000000,&H00000000,&H0000D4FF,&H0000D4FF,-1,0,0,0,100,100,0,0,3,18,0,8,90,90,210,1
+Style: Cap,{CAPFONT},{CAPSIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,470,1
+Style: Hook,{CAPFONT},{HOOKSIZE},{HOOKFG},{HOOKFG},{HOOKBG},{HOOKBG},-1,0,0,0,100,100,0,0,3,18,0,8,90,90,210,1
 Style: Draft,Inter,34,&H00FFFFFF,&H00FFFFFF,&H000000C8,&H000000C8,-1,0,0,0,100,100,0,0,3,8,0,8,40,40,60,1
 
 [Events]
@@ -138,7 +285,7 @@ for i, (sc, tm) in enumerate(zip(script["scenes"], timing["scenes"])):
                          (f"1.26-0.18*on/{nk}+{kick}", "0.5", "0.44"), (f"1.14+0.10*on/{nk}+{kick}", f"0.88-0.76*on/{nk}", "0.38")][(i + k) % 4]
         else:
             z, fx, fy = [(f"1.0+0.10*on/{nk}+{kick}", "0.5", "0.42"), (f"1.12-0.10*on/{nk}+{kick}", "0.5", "0.42")][k % 2]
-        src = still(i, sc, img, k if (len(imgs) > 1 or not img) else 0)
+        src = still(i, sc, img, k if (len(imgs) > 1 or not img) else 0, ns)
         first_still = first_still or src
         out = wd("render", f"s{i:02d}_{k}.mp4")
         run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS), "-loop", "1", "-i", src, "-frames:v", str(nk),
@@ -195,7 +342,7 @@ elif os.path.exists(music):
 else:
     cmd += ["-i", sfx_track(dur)]
     af = "[1:a][2:a]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]"
-vf = f"color=c=0xFFD400:s={W}x14:r={FPS}[bar];[0:v][bar]overlay=x='-{W}+{W}*t/{dur:.2f}':y={H - 14}:shortest=1[vb];[vb]ass='{ass}'[v]"
+vf = f"color=c={'0xDE2C2C' if DOC else '0xFFD400'}:s={W}x14:r={FPS}[bar];[0:v][bar]overlay=x='-{W}+{W}*t/{dur:.2f}':y={H - 14}:shortest=1[vb];[vb]ass='{ass}':fontsdir='{FDIR}'[v]"
 cmd += ["-filter_complex", f"{vf};{af}", "-map", "[v]", "-map", "[a]", "-t", f"{dur:.2f}",
         "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-pix_fmt", "yuv420p", "-r", str(FPS),
         "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-movflags", "+faststart", video]

@@ -25,4 +25,4 @@ Tienes precargadas las skills `yt-edit`, `yt-chapters`, `yt-shorts` del paquete 
 La skill `cartoon-3d-short` (claude-animated-shorts, MIT) hace cortos animados con Remotion + three.js. No forma parte de `/produce-video`: cada corto es un proyecto a medida (proyecto Remotion, recursos 3D, varias rondas de revisión, ~1,3 GB por render). Úsala solo si te piden expresamente un corto animado. Sus fotogramas de referencia de otro canal no se han copiado al repositorio; historia, personajes y voz son siempre propios.
 
 ## Criterio del propietario
-Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplícala a tu puesto: vídeos entretenidos, con energía y sin pantallas estáticas.
+Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplica la parte de tu puesto: formato documental (fondo oscuro, acento rojo, un gráfico por frase, tono de intriga), sin pantallas estáticas y con la voz fija del canal.

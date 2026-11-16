@@ -34,7 +34,7 @@ Extrae 4 fotogramas (1 s, 33 %, 66 %, último segundo) y míralos:
 
 Mismo formato de veredicto. Un vídeo con `fail` no se cuenta como terminado.
 
-## Energía (criterio del propietario, 2026-11-16)
-Un vídeo frío es un fallo aunque los datos estén bien. Rechaza si:
-- **guion**: suena a enciclopedia (frases largas, sin sorpresa ni pregunta al espectador), tiene menos de 5 imágenes distintas sin motivo, o dos tarjetas seguidas evitables;
-- **vídeo**: hay un plano que no cambia durante más de 3 s (compara fotogramas separados 2,5 s), faltan los fondos de color, los subtítulos animados o la barra de progreso, o la voz no es la configurada en `config/channel.json`.
+## Formato documental (criterio del propietario, 2026-11-16)
+Lee "Dirección del propietario" en `state/playbook.md`. Rechaza si:
+- **guion**: no hay intriga (gancho con cifra exacta, un "pero" que gire, pregunta final), suena a enciclopedia, hay tres escenas seguidas del mismo tipo de gráfico, o algún texto en pantalla (`value`, `text`, `label`, `card`) no está respaldado por `research.json`;
+- **vídeo**: un plano no cambia durante más de 3 s (compara fotogramas separados 2,5 s), el estilo no es el oscuro con acento rojo, un gráfico sale cortado o ilegible, o la voz no es la de `config/channel.json`.
