@@ -28,7 +28,7 @@ for title in titles:
         items = get_json(f"{base}/api/rest_v1/page/media-list/{q}")["items"]
     except Exception:
         items = []
-    files = [i["title"] for i in items if i.get("type") == "image" and not i["title"].lower().endswith(".svg")][:8]
+    files = [i["title"] for i in items if i.get("type") == "image" and i.get("title") and not i["title"].lower().endswith(".svg")][:8]
     for i in range(0, len(files), 6):
         tq = urllib.parse.quote("|".join(files[i:i + 6]))
         info = get_json(f"{base}/w/api.php?action=query&format=json&prop=imageinfo&iiprop=url|extmetadata|size&iiurlwidth=1280&titles={tq}")
