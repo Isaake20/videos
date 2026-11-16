@@ -148,11 +148,15 @@ def g_doc(bg, sc, prog):
         size -= 6; f = ImageFont.truetype(TYPE, size); lines = wrap_px(d, doc["text"], f, w - 140)
     total = sum(len(x) for x in lines); left = max(3, round(total * min(1, prog * 1.25))); y = 180
     hl = (doc.get("highlight") or "").lower().strip(" .,;:!?¡¿")
+    hs = " ".join(lines).lower().find(hl) if hl else -1  # the marker may span several lines: one bar per line
+    he = hs + len(hl); off = 0
     for ln in lines:
         part = ln[:left]; left -= len(part)
-        if hl and prog >= 1 and hl in ln.lower():
-            s0 = ln.lower().index(hl); x0 = 70 + d.textlength(ln[:s0], font=f); x1 = x0 + d.textlength(ln[s0:s0 + len(hl)], font=f)
+        a, b = max(hs - off, 0), min(he - off, len(ln))
+        if hs >= 0 and prog >= 1 and a < b:
+            x0 = 70 + d.textlength(ln[:a], font=f); x1 = 70 + d.textlength(ln[:b], font=f)
             d.rectangle((x0 - 8, y - 6, x1 + 8, y + size * 1.05), fill=(230, 60, 60, 255))
+        off += len(ln) + 1
         d.text((70, y), part, font=f, fill=INK); y += size * 1.35
         if left <= 0:
             break

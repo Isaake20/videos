@@ -32,6 +32,7 @@ Cada escena lleva **un** gráfico. El render lo construye por pasos y corta cada
 | `image` + `label` opcional | Foto tipo expediente con etiqueta mecanografiada | Solo si la imagen muestra de verdad lo que se narra |
 | `images`: 2-4 archivos | Varias fotos en cortes rápidos | Escenas de más de 4 s con material |
 
+- **Citas y documentos**: el `text` de un `doc` es una de dos cosas. (a) *Cita literal*: fragmentos exactos de la fuente, cada corte marcado con "[…]", sin cambiar mayúsculas ni signos, y etiqueta "· cita original (idioma)". (b) *Paráfrasis propia*: tus palabras, en español, sin comillas y sin etiqueta de cita. Por defecto (b): el guion es propio y copiar frases de Wikipedia no lo es. Usa (a) solo para una frase clave corta (hasta ~25 palabras). Antes de guardar, comprueba cada cita literal contra `research.json` (trozo a trozo, ignorando los "[…]").
 - Todo texto en pantalla (`value`, `text`, `label`, `card`) debe estar respaldado por `research.json`: es un dato más. El `highlight` debe aparecer tal cual dentro de `text`.
 - Mira cada imagen con Read antes de usarla. Si no hay imagen correcta, usa `doc` o `stat`: mejor un gráfico que una foto que no corresponde.
 - No repitas la misma imagen.
