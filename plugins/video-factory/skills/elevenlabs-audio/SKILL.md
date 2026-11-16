@@ -12,7 +12,7 @@ La clave **no** está en ninguna variable: el proxy de red del entorno la inyect
 - `tts.py <slug> --draft` → pista muda con tiempos estimados. Solo para previsualizar; el render queda marcado como BORRADOR.
 
 ## Voz
-`config/channel.json → elevenlabs.voice_id`. Si está vacío, `tts.py` elige una voz en español de la cuenta y la guarda: la voz del canal debe ser siempre la misma. Ajustes: `stability` 0,4 (expresiva), `speed` 1,08, modelo `eleven_multilingual_v2`.
+`config/channel.json → elevenlabs.voice_id`. Si está vacío, `tts.py` elige una voz en español de la cuenta y la guarda: la voz del canal debe ser siempre la misma. La voz actual es "M - voz ágil" (rápida y enérgica, latinoamericana), elegida por el propietario el 2026-11-16 porque la anterior sonaba fría; no la cambies sin que lo pida. Ajustes: `stability` 0,3 (muy expresiva), `style` 0,55, `speed` 1,12, modelo `eleven_multilingual_v2`. El `music_prompt` debe pedir música animada y con ritmo (upbeat, playful, 110-125 bpm), no ambiental.
 
 ## Cuota
 Antes de generar, `tts.py` consulta `/v1/user/subscription` y se detiene si quedan menos del doble de caracteres necesarios. Tope por ejecución: `max_chars_per_run`. Un Short gasta ≈ 700-900 caracteres.

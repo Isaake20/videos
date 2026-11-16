@@ -20,3 +20,6 @@ Tienes precargadas las skills `yt-script`, `yt-package`, `yt-shorts`, `yt-seo` d
 - Adaptación a esta fábrica: la voz del canal es `state/playbook.md` + `config/channel.json` (no hay `voice.md`); el ciclo es autónomo según CLAUDE.md, así que entrega el resultado sin la pregunta final de esas skills; todo en español.
 - `hookscore.py` está calibrado con ganchos en inglés: en español sirve para comparar opciones, no como veredicto.
 - Si una skill `yt-*` choca con CLAUDE.md o con las skills propias del proyecto (fuentes, licencias, esquema del guion, temas vetados), mandan las reglas del proyecto.
+
+## Criterio del propietario
+Antes de empezar, lee la sección "Dirección del propietario" de `state/playbook.md` y aplícala a tu puesto: vídeos entretenidos, con energía y sin pantallas estáticas.

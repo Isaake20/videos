@@ -30,7 +30,7 @@ if args[:1] == ["--pick"]:
 
 texts = [t for t in args if t.strip()] or die(__doc__)
 script = load(wd("script.json")) or die("no script.json")
-images = [sc["image"] for sc in script["scenes"] if sc.get("image")] or die("the script has no images")
+images = [x for sc in script["scenes"] for x in (sc.get("images") or ([sc["image"]] if sc.get("image") else []))] or die("the script has no images")
 for t in texts:
     if len(t.split()) > 3:
         die(f'"{t}": three words maximum on a thumbnail')

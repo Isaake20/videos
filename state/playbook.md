@@ -15,7 +15,7 @@ Fuente: `state/channels.json` — últimos ~15 vídeos de 7 canales de referenci
 - **Fuentes y créditos en la descripción** de cada vídeo: casi ningún canal de Shorts lo hace.
 - **Cifra en pantalla** como tarjeta gigante al menos una vez por vídeo.
 - **Subtítulos palabra a palabra** sincronizados con la voz.
-- **40-55 s** con cambio de imagen cada 5-9 s y cierre que enlaza con el gancho.
+- **40-55 s** con cambio de plano cada ~2 s (nunca una pantalla quieta más de 3 s) y cierre que enlaza con el gancho.
 - **Puente con la tendencia del día**: el tema entra por lo que la gente ya está buscando.
 
 ## Fórmulas de título
@@ -31,3 +31,12 @@ Fuente: `state/channels.json` — últimos ~15 vídeos de 7 canales de referenci
 
 ## Límite del análisis
 El feed público solo da 15 vídeos por canal y vistas totales; no hay retención ni CTR. Son indicios, no pruebas.
+
+## Dirección del propietario (2026-11-16): vídeos vivos, no fríos
+El primer vídeo salió con voz sosa y pantallas estáticas. Desde ahora, para todos los puestos:
+- **Voz** rápida y con energía ("M - voz ágil"); guion escrito para decirse con ganas.
+- **Movimiento constante**: cortes cada ~2 s, fondos de color vivo, imágenes como pegatinas, subtítulos que saltan, efectos de sonido y barra de progreso.
+- **Tono entretenido**: sorpresa, contraste, humor que sale del dato, una pregunta al espectador. Nada de tono de enciclopedia.
+- **Material visual de sobra**: 8 o más imágenes por vídeo; varias por escena larga (`images`).
+- **Temas**: a igualdad de señal, gana el que tenga más imágenes llamativas y una historia con giro.
+- Referencias del propietario (solo se estudia el estilo, no se copia nada): cortos con personajes animados, colores planos intensos y texto grande en pantalla.

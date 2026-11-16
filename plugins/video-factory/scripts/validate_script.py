@@ -25,10 +25,13 @@ wdir = os.path.dirname(os.path.abspath(p))
 for i, sc in enumerate(scenes, 1):
     if not sc.get("text"):
         errs.append(f"scene {i}: no text")
-    if sc.get("image") and not os.path.exists(os.path.join(wdir, sc["image"])):
-        errs.append(f"scene {i}: image {sc['image']} not found")
-    if not sc.get("image") and not sc.get("card"):
-        errs.append(f"scene {i}: needs 'image' (file from research) or 'card' (big on-screen text)")
+    for im in (sc.get("images") or ([sc["image"]] if sc.get("image") else [])):
+        if not os.path.exists(os.path.join(wdir, im)):
+            errs.append(f"scene {i}: image {im} not found")
+    if not sc.get("image") and not sc.get("images") and not sc.get("card"):
+        errs.append(f"scene {i}: needs 'image', 'images' (2-3 files shown in quick cuts) or 'card' (big on-screen text)")
+    if len(sc.get("images") or []) > 4:
+        errs.append(f"scene {i}: at most 4 images per scene")
 if len(s.get("hook_text", "").split()) > 9:
     errs.append("hook_text over 9 words")
 if len(s.get("title", "")) > 70:

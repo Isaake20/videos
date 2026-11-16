@@ -7,7 +7,9 @@ description: Cómo funciona y cómo depurar el render vertical 1080x1920 (ffmpeg
 `pipeline.py <slug> [--draft]` encadena: validar → voz → música → `render.py` → comprobaciones técnicas → `state/history.json`.
 
 ## Qué hace `render.py`
-- Cada escena es una imagen fija con zoom lento (alterna acercar/alejar), sobre fondo desenfocado de la misma imagen; las escenas `card` usan un degradado con texto gigante.
+- Nada de pantallas estáticas: cada escena se corta en planos de ~2 s, cada uno con otro encuadre (acercar, alejar, barrido a izquierda o derecha) y un pequeño golpe de zoom en el corte. Si la escena trae `images` (2-4 archivos), los planos alternan esas imágenes.
+- Fondo de color vivo distinto en cada plano; la imagen va como "pegatina" inclinada con borde blanco y sombra; las escenas `card` llevan texto gigante sobre el mismo tipo de fondo.
+- Efectos de sonido sintetizados (barrido en cada cambio de escena, toque en los cortes internos, "pop" en las tarjetas) y barra de progreso amarilla abajo.
 - Los cortes caen en la pausa entre escenas según `timing.json`.
 - Subtítulos ASS: bloques de hasta 3 palabras en el tercio inferior, la palabra que suena resaltada en amarillo.
 - `hook_text` en una banda amarilla arriba durante los primeros ~3,5 s.
@@ -18,7 +20,7 @@ description: Cómo funciona y cómo depurar el render vertical 1080x1920 (ffmpeg
 ```bash
 ffmpeg -y -loglevel error -ss 1 -i output/<carpeta>/video.mp4 -frames:v 1 -vf scale=540:-1 /tmp/f1.jpg
 ```
-Saca fotogramas en el segundo 1, a mitad y cerca del final y míralos con Read. Comprueba: texto dentro de márgenes, imagen reconocible, subtítulo legible sobre el fondo, gancho sin cortar.
+Saca fotogramas en el segundo 1, a mitad y cerca del final, y además dos fotogramas separados 2,5 s dentro de la escena más larga, y míralos con Read. Si esos dos se ven iguales, hay una pantalla estática: es un fallo. Comprueba: texto dentro de márgenes, imagen reconocible, subtítulo legible sobre el fondo, gancho sin cortar.
 
 ## Arreglos habituales
 - Imagen irreconocible o con mucho texto → cambia `image` por otra o por una `card`.

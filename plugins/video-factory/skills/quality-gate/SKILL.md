@@ -33,3 +33,8 @@ Extrae 4 fotogramas (1 s, 33 %, 66 %, último segundo) y míralos:
 `metadata.json` debe incluir fuentes, créditos de imagen y el aviso de voz sintética.
 
 Mismo formato de veredicto. Un vídeo con `fail` no se cuenta como terminado.
+
+## Energía (criterio del propietario, 2026-11-16)
+Un vídeo frío es un fallo aunque los datos estén bien. Rechaza si:
+- **guion**: suena a enciclopedia (frases largas, sin sorpresa ni pregunta al espectador), tiene menos de 5 imágenes distintas sin motivo, o dos tarjetas seguidas evitables;
+- **vídeo**: hay un plano que no cambia durante más de 3 s (compara fotogramas separados 2,5 s), faltan los fondos de color, los subtítulos animados o la barra de progreso, o la voz no es la configurada en `config/channel.json`.

@@ -9,6 +9,9 @@ Fábrica autónoma de Shorts en español guiados por tendencias. Canal y nicho: 
 - Ejecuta los scripts desde la raíz: `python3 plugins/video-factory/scripts/<script>.py`.
 - La clave de ElevenLabs la inyecta el proxy del entorno para `api.elevenlabs.io`; no existe como variable y no se pide en el chat.
 
+## Criterio del propietario
+- Los vídeos tienen que ser entretenidos y con movimiento constante: voz enérgica, cortes cada ~2 s, color, humor que sale del dato. Un vídeo frío o con pantallas estáticas se rechaza en QA. Detalle en `state/playbook.md` ("Dirección del propietario"); todos los agentes lo leen antes de trabajar.
+
 ## Reglas que no se saltan
 - Guion propio a partir de investigación propia. De otros canales solo se estudian patrones (`state/playbook.md`).
 - Todo dato lleva fuente; las imágenes son de Wikimedia Commons con licencia libre y se acreditan en `metadata.json`.
