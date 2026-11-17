@@ -367,11 +367,18 @@ cmd += ["-filter_complex", f"{vf};{af}", "-map", "[v]", "-map", "[a]", "-t", f"{
 run(cmd)
 
 # thumbnail: first still + hook
-th = Image.open(first_still).resize((W, H)); d = ImageDraw.Draw(th)
-f = ImageFont.truetype(FONT, 110); y = int(H * 0.615)
-for ln in textwrap.wrap(script["hook_text"].upper(), 14):
-    d.text((W / 2, y), ln, font=f, fill="white" if DOC else (255, 212, 0), anchor="ma", stroke_width=10, stroke_fill="black"); y += 128
-th.convert("RGB").save(path(*odir, "thumbnail.jpg"), quality=90)
+# a thumbnail picked by the thumbnail desk (thumbs.py --pick) survives re-renders; otherwise a default is drawn
+picked = (load(wd("thumbs", "variants.json"), {}) or {}).get("picked")
+chosen = wd("thumbs", f"{picked:02d}.jpg") if picked else None
+if chosen and os.path.exists(chosen):
+    import shutil
+    shutil.copy(chosen, path(*odir, "thumbnail.jpg"))
+else:
+    th = Image.open(first_still).resize((W, H)); d = ImageDraw.Draw(th)
+    f = ImageFont.truetype(FONT, 110); y = int(H * 0.615)
+    for ln in textwrap.wrap(script["hook_text"].upper(), 14):
+        d.text((W / 2, y), ln, font=f, fill="white" if DOC else (255, 212, 0), anchor="ma", stroke_width=10, stroke_fill="black"); y += 128
+    th.convert("RGB").save(path(*odir, "thumbnail.jpg"), quality=90)
 
 research = load(wd("research.json"), {"images": []})
 used = {x for sc in script["scenes"] for x in (sc.get("images") or [sc.get("image")])}
