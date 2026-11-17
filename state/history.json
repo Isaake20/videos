@@ -24,5 +24,14 @@
     "chars": 9645,
     "output": "output/2026-11-17-mensaje-arecibo-respuesta-largo",
     "format": "long"
+  },
+  {
+    "date": "2026-11-17",
+    "slug": "romer-luz-io-retraso",
+    "title": "1676: predijo que una luna saldría 10 minutos tarde",
+    "topic_key": "ole rømer y la velocidad de la luz (350 años)",
+    "chars": 796,
+    "output": "output/2026-11-17-romer-luz-io-retraso",
+    "format": "short"
   }
 ]
