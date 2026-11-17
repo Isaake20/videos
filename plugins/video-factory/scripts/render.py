@@ -174,8 +174,8 @@ def g_doc(bg, sc, prog):
 
 def g_stat(bg, sc, prog):
     """A huge figure with a small heading; the last build turns it red and stamps the label."""
-    st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.43
-    f, fs = fit(d, [st["value"].upper()], DISP, int(620 * Q), S[0] * 0.76, 160)
+    st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * (0.43 if LONG else 0.415)  # vertical: leave room for the subtitles under the label
+    f, fs = fit(d, [st["value"].upper()], DISP, int(620 * Q) if LONG else 560, S[0] * 0.76, 160)
     if st.get("over"):  # keep the small heading clear of the tallest glyph (accents such as the tilde of Ñ)
         fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
         top = d.textbbox((S[0] / 2, cy), st["value"].upper(), font=f, anchor="mm")[1]
@@ -195,7 +195,7 @@ def g_timeline(bg, sc, prog):
     tl = sc["timeline"]; d = ImageDraw.Draw(bg); cy = S[1] * 0.47; x0, x1 = S[0] * 0.24, S[0] * 0.76
     ft, _ = fit(d, [tl["from"].upper(), tl["to"].upper()], DISP, int(190 * Q) + 20, S[0] * 0.26, 80)
     d.line((x0, cy, x1, cy), fill=(90, 90, 96), width=6)
-    xe = x0 + (x1 - x0) * min(1, prog * 1.2)
+    xe = x0 + (x1 - x0) * min(1, prog * 1.5)
     d.line((x0, cy, xe, cy), fill=RED, width=14)
     d.line((x0, cy - 46, x0, cy + 46), fill="white", width=8); d.text((x0, cy + 70), tl["from"].upper(), font=ft, fill="white", anchor="ma")
     if xe >= x1:
@@ -416,5 +416,5 @@ if not LONG and not draft:  # TikTok takes the same vertical file; only the capt
     import shutil
     shutil.copy(video, path(*odir, "tiktok.mp4"))
     tags = " ".join(h for h in script["hashtags"] if h.lower() != "#shorts")
-    open(path(*odir, "tiktok.txt"), "w", encoding="utf-8").write(f"{script['title']}\n\n{script['description'].strip()}\n\n{tags} #fyp #parati\n")
+    open(path(*odir, "tiktok.txt"), "w", encoding="utf-8").write(f"{script['title']}\n\n{script['description'].strip()}\n\nNarración con voz sintética (ElevenLabs).\n\n{tags} #fyp #parati\n")
 print(f"{'DRAFT ' if draft else ''}rendered {video} ({timing['duration']:.1f}s)")
