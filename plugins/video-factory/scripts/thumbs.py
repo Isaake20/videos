@@ -79,7 +79,7 @@ def draw_long(im, text, st):
 def draw(im, text, st):
     if LONG:
         return draw_long(im, text, st)
-    d = ImageDraw.Draw(im); lines = textwrap.wrap(text.upper(), 10)
+    d = ImageDraw.Draw(im); lines = textwrap.wrap(text.upper(), 10, break_long_words=False)
     fs = 230 if max(map(len, lines)) <= 7 else 170
     f = ImageFont.truetype(FONT, fs)
     while fs > 80 and max(d.textlength(ln, font=f) for ln in lines) > W - 200:  # keep a safe margin on both sides
