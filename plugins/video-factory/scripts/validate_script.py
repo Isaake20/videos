@@ -20,7 +20,7 @@ long = s.get("format") == "long"
 lo, hi = cfg.get("long_seconds", [480, 600]) if long else cfg.get("target_seconds", [40, 55]); wps = cfg.get("words_per_second", 2.6)
 if not lo * wps <= words <= hi * wps:
     errs.append(f"narration has {words} words; need {int(lo*wps)}-{int(hi*wps)} for {lo}-{hi}s")
-smin, smax = (60, 150) if long else (4, 9)
+smin, smax = (60, 150) if long else (4, 12)
 if not smin <= len(scenes) <= smax:
     errs.append(f"{len(scenes)} scenes; need {smin}-{smax} for this format")
 wdir = os.path.dirname(os.path.abspath(p))
