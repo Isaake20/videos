@@ -107,11 +107,11 @@ def g_photo(bg, sc, img, i, k):
     im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
     tall = im.height >= 1.8 * im.width  # diagrams such as the Arecibo message (1:3) must never be cropped
     if LONG or tall:  # the horizontal frame has room: always show the whole picture
-        fg = ImageOps.contain(im, (int(S[0] * (0.74 if LONG else 0.70)), int(S[1] * (0.62 if (LONG or tall) else 0.46))))
-    else:
-        fg = ImageOps.contain(im, (int(S[0] * 0.70), int(S[1] * 0.46)))
+        fg = ImageOps.contain(im, (int(S[0] * (0.74 if LONG else 0.70)), int(S[1] * (0.62 if LONG else 0.46))))
+    else:  # vertical frame: the card (picture + label) must end above the subtitles, so portraits stay at 40 % of the height
+        fg = ImageOps.contain(im, (int(S[0] * 0.70), int(S[1] * 0.40)))
         if fg.width < S[0] * 0.55:
-            fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.46)), centering=(0.5, 0.3))
+            fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.40)), centering=(0.5, 0.3))
     fg = Image.blend(fg, ImageOps.grayscale(fg).convert("RGB"), 0.35)
     m, foot = 26, 120 if sc.get("label") else 26
     cw, f = fg.width + 2 * m, None
