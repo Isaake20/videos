@@ -105,15 +105,23 @@ def paste_rot(bg, layer, angle, cx, cy, shadow=True):
 def g_photo(bg, sc, img, i, k):
     """A picture as an evidence photo: white frame, slight tilt, optional typewriter label."""
     im = ImageOps.exif_transpose(Image.open(wd(img))).convert("RGB")
-    fg = ImageOps.contain(im, (int(S[0] * 0.70), int(S[1] * 0.46)))
-    if fg.width < S[0] * 0.55:
-        fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.46)), centering=(0.5, 0.3))
+    tall = im.height >= 1.8 * im.width  # diagrams such as the Arecibo message (1:3) must never be cropped
+    if LONG or tall:  # the horizontal frame has room: always show the whole picture
+        fg = ImageOps.contain(im, (int(S[0] * (0.74 if LONG else 0.70)), int(S[1] * (0.62 if (LONG or tall) else 0.46))))
+    else:
+        fg = ImageOps.contain(im, (int(S[0] * 0.70), int(S[1] * 0.46)))
+        if fg.width < S[0] * 0.55:
+            fg = ImageOps.fit(im, (int(S[0] * 0.70), int(S[1] * 0.46)), centering=(0.5, 0.3))
     fg = Image.blend(fg, ImageOps.grayscale(fg).convert("RGB"), 0.35)
     m, foot = 26, 120 if sc.get("label") else 26
-    card = Image.new("RGBA", (fg.width + 2 * m, fg.height + m + foot), PAPER + (255,))
-    card.paste(fg, (m, m))
-    if sc.get("label"):
-        d = ImageDraw.Draw(card); f, _ = fit(d, [sc["label"]], TYPE, 58, card.width - 80, 30)
+    cw, f = fg.width + 2 * m, None
+    if sc.get("label"):  # a narrow picture (a tall diagram) gets a wider card so the label always fits
+        f, _ = fit(ImageDraw.Draw(Image.new("RGB", (8, 8))), [sc["label"]], TYPE, 58, int(S[0] * 0.74) - 80, 30)
+        cw = max(cw, int(ImageDraw.Draw(Image.new("RGB", (8, 8))).textlength(sc["label"], font=f)) + 80)
+    card = Image.new("RGBA", (cw, fg.height + m + foot), PAPER + (255,))
+    card.paste(fg, ((cw - fg.width) // 2, m))
+    if f:
+        d = ImageDraw.Draw(card)
         d.text((card.width / 2, fg.height + m + foot / 2), sc["label"], font=f, fill=INK, anchor="mm")
     paste_rot(bg, card, (2.5, -2.5, 1.5, -1.5)[(i + k) % 4], S[0] / 2, S[1] * 0.44)
     d = ImageDraw.Draw(bg); d.rectangle((S[0] * 0.5 - 70, S[1] * 0.44 - card.height / 2 - 34, S[0] * 0.5 + 70, S[1] * 0.44 - card.height / 2 + 30), fill=RED + (235,))
