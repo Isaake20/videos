@@ -1,5 +1,5 @@
 {
-  "channel_name": "Tendencia Explicada",
+  "channel_name": "Prueba Roja",
   "niche": "Shorts en español que explican, con datos verificables, la ciencia, tecnología o historia detrás de lo que es tendencia hoy",
   "language": "es",
   "wiki_lang": "es",
@@ -62,5 +62,6 @@
     0,
     2,
     4
-  ]
+  ],
+  "channel_handle": "@pruebaroja"
 }
