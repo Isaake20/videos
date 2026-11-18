@@ -42,5 +42,14 @@
     "chars": 855,
     "output": "output/2026-11-18-mendeleiev-tabla-huecos",
     "format": "short"
+  },
+  {
+    "date": "2026-11-18",
+    "slug": "mendeleiev-tabla-huecos-largo",
+    "title": "Mendeléyev predijo un elemento 17 años antes de encontrarse",
+    "topic_key": "tabla periódica de los elementos",
+    "chars": 10350,
+    "output": "output/2026-11-18-mendeleiev-tabla-huecos-largo",
+    "format": "long"
   }
 ]

@@ -69,3 +69,6 @@ El Short del mismo día no es un resumen: es el mejor gancho del caso, con su pr
 }
 ```
 Al guardar, un hook ejecuta `validate_script.py`; corrige lo que indique.
+
+## Descripción
+Escribe la descripción para el público: no menciones `metadata.json` ni archivos internos. Puedes decir "Fuentes abajo": el render las añade al final en YouTube y las quita en el texto de TikTok.

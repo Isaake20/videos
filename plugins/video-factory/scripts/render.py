@@ -400,7 +400,9 @@ if script.get("chapters"):
         i = min(range(len(est)), key=lambda k: abs(est[k] - t0)); s = timing["scenes"][i]["start"]
         chap.append({"t": f"{int(s // 60):02d}:{int(s % 60):02d}", "title": c["title"]})
     chap[0]["t"] = "00:00"
-desc = script["description"].strip()
+import re as _re
+base_desc = _re.sub(r"\s*\(créditos en metadata\.json\)", "", script["description"].strip())  # the public cannot see metadata.json
+desc = base_desc
 if chap:
     desc += "\n\nCapítulos:\n" + "\n".join(f"{c['t']} {c['title']}" for c in chap)
 desc += "\n\nFuentes:\n" + "\n".join(script["sources"])
@@ -414,5 +416,5 @@ if not LONG and not draft:  # TikTok takes the same vertical file; only the capt
     import shutil
     shutil.copy(video, path(*odir, "tiktok.mp4"))
     tags = " ".join(h for h in script["hashtags"] if h.lower() != "#shorts")
-    open(path(*odir, "tiktok.txt"), "w", encoding="utf-8").write(f"{script['title']}\n\n{script['description'].strip()}\n\nNarración con voz sintética (ElevenLabs).\n\n{tags} #fyp #parati\n")
+    open(path(*odir, "tiktok.txt"), "w", encoding="utf-8").write(f"{script['title']}\n\n{_re.sub(r"\s*Fuentes abajo[^.]*\.?", "", base_desc).strip()}\n\nNarración con voz sintética (ElevenLabs).\n\n{tags} #fyp #parati\n")
 print(f"{'DRAFT ' if draft else ''}rendered {video} ({timing['duration']:.1f}s)")
