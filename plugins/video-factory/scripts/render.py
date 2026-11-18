@@ -427,8 +427,11 @@ if script.get("chapters"):
         chap.append({"t": f"{int(s // 60):02d}:{int(s % 60):02d}", "title": c["title"]})
     chap[0]["t"] = "00:00"
 import re as _re
-base_desc = _re.sub(r"\s*\(créditos en metadata\.json\)", "", script["description"].strip())  # the public cannot see metadata.json
-base_desc = _re.sub(r"\n*Cap[ií]tulos:\n(?:\d{1,2}:\d{2}[^\n]*\n?)+", "\n", base_desc).strip()  # chapters are added below with the real times
+base_desc = _re.sub(r"[^.\n]*metadata\.json[^.\n]*\.?", "", script["description"].strip())  # the public cannot see metadata.json
+base_desc = _re.sub(r"(?m)^\s*(?:Cap[ií]tulos:)?\s*$\n?(?=\d{1,2}:\d{2}\s)", "", base_desc)
+base_desc = _re.sub(r"(?m)^\s*\d{1,2}:\d{2}\s+\S[^\n]*\n?", "", base_desc)  # any chapter list: the real times are added below
+base_desc = _re.sub(r"(?im)^\s*Cap[ií]tulos:\s*$\n?", "", base_desc)
+base_desc = _re.sub(r"\n{3,}", "\n\n", base_desc).strip()
 def _bytes(s):
     return len(s.encode("utf-8"))
 
@@ -451,9 +454,16 @@ def assemble(srcs, cred):
 desc = assemble(srcs, cred)
 while _bytes(desc) > 4900 and len(srcs) > 2:
     srcs = srcs[:-1]; desc = assemble(srcs, cred)
-for width in (50, 32):  # still too long: shorten the work titles in the credits (author, licence and link are kept)
+def _short(c, width):
+    title, sep, rest = c.partition(" — ")
+    if len(title) > width:
+        title = title[:width].rsplit(" ", 1)[0].rstrip(" ,.;:-") + "…"
+    return title + sep + rest
+
+
+for width in (60, 40, 28):  # still too long: shorten the work titles in the credits (author, licence and link are kept)
     if _bytes(desc) > 4900:
-        cred = [_re.sub(r"^(.{0,%d}).*?( — )" % width, r"\1\2", c) for c in cred]; desc = assemble(srcs, cred)
+        cred = list(dict.fromkeys(_short(c, width) for c in cred)); desc = assemble(srcs, cred)
 while _bytes(desc) > 4900 and srcs:
     srcs = srcs[:-1]; desc = assemble(srcs, cred)
 save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "chapters": chap, "title": script["title"], "description": desc, "sources": script["sources"], "hashtags": script["hashtags"],
