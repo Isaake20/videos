@@ -469,6 +469,10 @@ while _bytes(desc) > 4900 and srcs:
 save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "chapters": chap, "title": script["title"], "description": desc, "sources": script["sources"], "hashtags": script["hashtags"],
                                     "duration": timing["duration"], "draft": draft, "trend": script["trend"],
                                     "synthetic_voice_disclosure": True, "image_credits": credits})
+if LONG and not draft:  # everything needed to upload the long video by hand
+    open(path(*odir, "youtube.txt"), "w", encoding="utf-8").write(
+        f"TÍTULO\n{script['title']}\n\nDESCRIPCIÓN (pegar tal cual; incluye capítulos, fuentes y créditos)\n{desc}\n\nMINIATURA\nthumbnail.jpg ({W}x{H})\n\n"
+        "AJUSTES AL SUBIR\n- Idioma: español. Contenido no dirigido a niños.\n- Marcar \"contenido alterado o sintético\": la narración es voz sintética.\n")
 if not LONG and not draft:  # TikTok takes the same vertical file; only the caption differs
     import shutil
     shutil.copy(video, path(*odir, "tiktok.mp4"))
