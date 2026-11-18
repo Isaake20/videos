@@ -203,7 +203,20 @@ def g_timeline(bg, sc, prog):
         d.text((S[0] / 2, cy - 250 * Q), tl["label"].upper(), font=fl, fill=RED, anchor="mm")
 
 
+_SUB = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
+
+
+def gl(s):
+    """The brand fonts have no arrows, subscripts or ≈ (they would print as a crossed box): swap in glyphs they do have."""
+    return s.translate(_SUB).replace("→", "»").replace("←", "«").replace("≈", "~")
+
+
+def gl_obj(o):
+    return gl(o) if isinstance(o, str) else {k: gl_obj(v) for k, v in o.items()} if isinstance(o, dict) else o
+
+
 def still(i, sc, img=None, k=0, ns=1):
+    sc = {**sc, **{key: gl_obj(sc[key]) for key in ("card", "stat", "timeline", "doc", "label") if key in sc}}
     prog = (k + 1) / ns
     if DOC:
         bg = dark(i + k)
@@ -388,7 +401,11 @@ else:
 
 research = load(wd("research.json"), {"images": []})
 used = {x for sc in script["scenes"] for x in (sc.get("images") or [sc.get("image")])}
-credits = [f"{im['title']} — {im['author']} ({im['license']}) {im['source']}" for im in research["images"] if im["file"] in used]
+import re as _re2
+def _clean_title(s):  # "Archivo:X.jpg (recorte) (recorte: …)" -> "Archivo:X.jpg (recorte)"
+    s = _re2.sub(r"\s*\(recorte:[^)]*\)", "", s)
+    return _re2.sub(r"(\(recorte\))(\s*\(recorte\))+", r"\1", s).strip()
+credits = list(dict.fromkeys(f"{_clean_title(im['title'])} — {im['author']} ({im['license']}) {im['source']}" for im in research["images"] if im["file"] in used))  # one line per work, even if several crops use it
 # chapters: the script gives estimated times; the real ones come from the narration timing of the scene each chapter opens
 chap = []
 if script.get("chapters"):
@@ -402,6 +419,7 @@ if script.get("chapters"):
     chap[0]["t"] = "00:00"
 import re as _re
 base_desc = _re.sub(r"\s*\(créditos en metadata\.json\)", "", script["description"].strip())  # the public cannot see metadata.json
+base_desc = _re.sub(r"\n*Cap[ií]tulos:\n(?:\d{1,2}:\d{2}[^\n]*\n?)+", "\n", base_desc).strip()  # chapters are added below with the real times
 desc = base_desc
 if chap:
     desc += "\n\nCapítulos:\n" + "\n".join(f"{c['t']} {c['title']}" for c in chap)
