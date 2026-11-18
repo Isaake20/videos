@@ -36,7 +36,7 @@ if LONG:
 images = [x for sc in script["scenes"] for x in (sc.get("images") or ([sc["image"]] if sc.get("image") else []))] or die("the script has no images")
 def usable(img):  # skip panoramas and tiny pictures: they make a poor thumbnail
     w, h = Image.open(wd(img)).size
-    return w >= 700 and 0.6 <= w / h <= 2.0
+    return w >= 700 and 0.6 <= w / h <= (2.0 if LONG else 2.6)  # a wide scan still fills a vertical frame's width
 
 
 images = [i for i in dict.fromkeys(images) if usable(i)] or die("no image is suitable for a thumbnail")
