@@ -130,7 +130,7 @@ def g_photo(bg, sc, img, i, k):
 def g_card(bg, sc, prog):
     """Kinetic title: words appear build by build; the last build adds the red rule."""
     d = ImageDraw.Draw(bg); words = sc["card"].upper().split()
-    full = textwrap.wrap(" ".join(words), 11) or [""]
+    full = textwrap.wrap(" ".join(words), 11, break_on_hyphens=False) or [""]
     f, fs = fit(d, full, DISP, int((560 if len(sc["card"]) <= 3 else 400) * Q), S[0] * 0.74, 110)
     shown = max(1, min(len(words), int(len(words) * min(1.0, prog * 1.5) + 0.999)))  # reveal faster than the shots advance
     y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
@@ -228,7 +228,7 @@ def still(i, sc, img=None, k=0, ns=1):
         else:
             d = ImageDraw.Draw(bg)
             txt = sc.get("card") or (sc.get("stat") or {}).get("value") or (sc.get("timeline") or {}).get("label") or (sc.get("doc") or {}).get("highlight") or ""
-            lines = textwrap.wrap(txt.upper(), 12) or [""]
+            lines = textwrap.wrap(txt.upper(), 12, break_on_hyphens=False) or [""]
             f, fs = fit(d, lines, FONT, 520 if len(txt) <= 3 else 320, S[0] * 0.74, 90)
             y = int(S[1] * 0.44) - len(lines) * fs * 0.6
             for ln in lines:

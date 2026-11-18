@@ -33,5 +33,14 @@
     "chars": 796,
     "output": "output/2026-11-17-romer-luz-io-retraso",
     "format": "short"
+  },
+  {
+    "date": "2026-11-18",
+    "slug": "mendeleiev-tabla-huecos",
+    "title": "Predijo 5,5 y midieron 5,47: el hueco de Mendeléyev",
+    "topic_key": "tabla periódica de los elementos",
+    "chars": 855,
+    "output": "output/2026-11-18-mendeleiev-tabla-huecos",
+    "format": "short"
   }
 ]
