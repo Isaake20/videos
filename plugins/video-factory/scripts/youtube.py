@@ -92,7 +92,7 @@ def cmd_upload(odir):
     if sum(1 for p in log if p["date"] == today()) >= int(PUB.get("max_uploads_per_day", 1)):
         die("daily upload cap reached (publish.max_uploads_per_day)")
     tags = [t.lstrip("#") for t in meta.get("hashtags", [])][:15]
-    body = {"snippet": {"title": meta["title"][:100], "description": meta["description"][:4900], "tags": tags,
+    body = {"snippet": {"title": meta["title"][:100], "description": meta["description"].encode("utf-8")[:4900].decode("utf-8", "ignore"), "tags": tags,
                         "categoryId": str(PUB.get("category_id", "27")), "defaultLanguage": cfg.get("language", "es"),
                         "defaultAudioLanguage": cfg.get("language", "es")},
             "status": {"privacyStatus": PUB.get("privacy", "private"), "selfDeclaredMadeForKids": False,

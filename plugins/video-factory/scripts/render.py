@@ -61,6 +61,9 @@ DOC = cfg.get("style", "documental") == "documental"
 FDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "fonts")
 DISP = os.path.join(FDIR, "BebasNeue-Regular.ttf") if os.path.exists(os.path.join(FDIR, "BebasNeue-Regular.ttf")) else FONT
 TYPE = os.path.join(FDIR, "SpecialElite-Regular.ttf") if os.path.exists(os.path.join(FDIR, "SpecialElite-Regular.ttf")) else FONT
+MONO = os.path.join(FDIR, "JetBrainsMono-Bold.ttf")
+if not os.path.exists(MONO):
+    MONO = TYPE
 RED, PAPER, INK = (222, 44, 44), (236, 230, 214), (28, 26, 24)
 KINDS = ("doc", "stat", "timeline", "card")
 
@@ -128,7 +131,7 @@ def g_photo(bg, sc, img, i, k):
 def g_card(bg, sc, prog):
     """Kinetic title: words appear build by build; the last build adds the red rule."""
     d = ImageDraw.Draw(bg); words = sc["card"].upper().split()
-    full = textwrap.wrap(" ".join(words), 11, break_on_hyphens=False) or [""]
+    full = textwrap.wrap(" ".join(words), 11, break_on_hyphens=False, break_long_words=False) or [""]
     f, fs = fit(d, full, DISP, int((560 if len(sc["card"]) <= 3 else 400) * Q), S[0] * 0.74, 110)
     shown = max(1, min(len(words), int(len(words) * min(1.0, prog * 1.5) + 0.999)))  # reveal faster than the shots advance
     y = S[1] * 0.44 - len(full) * fs * 0.5; n = 0
@@ -170,16 +173,22 @@ def g_doc(bg, sc, prog):
     paste_rot(bg, card, -2.0, S[0] / 2, S[1] * 0.44)
 
 
+import re as _re_case_mod
+_re_case = _re_case_mod.compile(r"[A-Z][a-z]|[A-Za-z]\d|\d[A-Za-z]|[a-z]+/[a-z]+")
+
+
 def g_stat(bg, sc, prog):
     """A huge figure with a small heading; the last build turns it red and stamps the label."""
     st = sc["stat"]; d = ImageDraw.Draw(bg); cy = S[1] * (0.43 if LONG else 0.415)  # vertical: leave room for the subtitles under the label
-    f, fs = fit(d, [st["value"].upper()], DISP, int(620 * Q) if LONG else 560, S[0] * 0.76, 160)
+    raw = st["value"]  # formulas (Ga2O3), symbols (Te) and units (g/cm³) keep their case and use the typewriter font
+    keep = bool(_re_case.search(raw)); vtxt = raw if keep else raw.upper()
+    f, fs = fit(d, [vtxt], MONO if keep else DISP, int((620 if LONG else 560) * (0.55 if keep else 1) * (Q if LONG else 1)), S[0] * 0.76, 120)
     if st.get("over"):  # keep the small heading clear of the tallest glyph (accents such as the tilde of Ñ)
         fo, _ = fit(d, [st["over"].upper()], TYPE, 60, S[0] * 0.74, 34)
-        top = d.textbbox((S[0] / 2, cy), st["value"].upper(), font=f, anchor="mm")[1]
+        top = d.textbbox((S[0] / 2, cy), vtxt, font=f, anchor="mm")[1]
         ob = d.textbbox((0, 0), st["over"].upper(), font=fo, anchor="mm")
         d.text((S[0] / 2, min(cy - 330 * Q, top - 46 - (ob[3] - ob[1]) / 2)), st["over"].upper(), font=fo, fill=(200, 200, 205), anchor="mm")
-    d.text((S[0] / 2, cy), st["value"].upper(), font=f, fill=RED if prog >= 1 else "white", anchor="mm")
+    d.text((S[0] / 2, cy), vtxt, font=f, fill=RED if prog >= 1 else "white", anchor="mm")
     if st.get("label") and prog >= 0.6:
         fl, ls = fit(d, [st["label"].upper()], DISP, int(120 * Q) + 20, S[0] * 0.66, 60)
         tw = d.textlength(st["label"].upper(), font=fl); y = cy + fs * 0.5 + 70 * Q
@@ -239,7 +248,7 @@ def still(i, sc, img=None, k=0, ns=1):
         else:
             d = ImageDraw.Draw(bg)
             txt = sc.get("card") or (sc.get("stat") or {}).get("value") or (sc.get("timeline") or {}).get("label") or (sc.get("doc") or {}).get("highlight") or ""
-            lines = textwrap.wrap(txt.upper(), 12, break_on_hyphens=False) or [""]
+            lines = textwrap.wrap(txt.upper(), 12, break_on_hyphens=False, break_long_words=False) or [""]
             f, fs = fit(d, lines, FONT, 520 if len(txt) <= 3 else 320, S[0] * 0.74, 90)
             y = int(S[1] * 0.44) - len(lines) * fs * 0.6
             for ln in lines:
@@ -420,14 +429,34 @@ if script.get("chapters"):
 import re as _re
 base_desc = _re.sub(r"\s*\(créditos en metadata\.json\)", "", script["description"].strip())  # the public cannot see metadata.json
 base_desc = _re.sub(r"\n*Cap[ií]tulos:\n(?:\d{1,2}:\d{2}[^\n]*\n?)+", "\n", base_desc).strip()  # chapters are added below with the real times
-desc = base_desc
-if chap:
-    desc += "\n\nCapítulos:\n" + "\n".join(f"{c['t']} {c['title']}" for c in chap)
-desc += "\n\nFuentes:\n" + "\n".join(script["sources"])
-if credits:
-    desc += "\n\nImágenes (Wikimedia Commons):\n" + "\n".join(credits)
-desc += "\n\nNarración generada con voz sintética (ElevenLabs).\n\n" + " ".join(script["hashtags"])
-save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "chapters": chap, "title": script["title"], "description": desc, "hashtags": script["hashtags"],
+def _bytes(s):
+    return len(s.encode("utf-8"))
+
+
+head = base_desc + (("\n\nCapítulos:\n" + "\n".join(f"{c['t']} {c['title']}" for c in chap)) if chap else "")
+tail = "\n\nNarración generada con voz sintética (ElevenLabs).\n\n" + " ".join(script["hashtags"])
+srcs = [u for u in script["sources"] if not (credits and "commons.wikimedia.org" in u)]  # Commons pages are already in the credits
+cred = [_re.sub(r"^(Archivo|File):", "", c) for c in credits]
+
+
+def assemble(srcs, cred):
+    d = head
+    if srcs:
+        d += "\n\nFuentes:\n" + "\n".join(srcs)
+    if cred:
+        d += "\n\nImágenes (Wikimedia Commons):\n" + "\n".join(cred)
+    return d + tail
+
+
+desc = assemble(srcs, cred)
+while _bytes(desc) > 4900 and len(srcs) > 2:
+    srcs = srcs[:-1]; desc = assemble(srcs, cred)
+for width in (50, 32):  # still too long: shorten the work titles in the credits (author, licence and link are kept)
+    if _bytes(desc) > 4900:
+        cred = [_re.sub(r"^(.{0,%d}).*?( — )" % width, r"\1\2", c) for c in cred]; desc = assemble(srcs, cred)
+while _bytes(desc) > 4900 and srcs:
+    srcs = srcs[:-1]; desc = assemble(srcs, cred)
+save(path(*odir, "metadata.json"), {"format": "long" if LONG else "short", "chapters": chap, "title": script["title"], "description": desc, "sources": script["sources"], "hashtags": script["hashtags"],
                                     "duration": timing["duration"], "draft": draft, "trend": script["trend"],
                                     "synthetic_voice_disclosure": True, "image_credits": credits})
 if not LONG and not draft:  # TikTok takes the same vertical file; only the caption differs
