@@ -51,5 +51,14 @@
     "chars": 10350,
     "output": "output/2026-11-18-mendeleiev-tabla-huecos-largo",
     "format": "long"
+  },
+  {
+    "date": "2026-11-19",
+    "slug": "voyager-1-dia-luz",
+    "title": "Voyager 1 llega a un día luz con una computadora de 1977",
+    "topic_key": "voyager 1",
+    "chars": 823,
+    "output": "output/2026-11-19-voyager-1-dia-luz",
+    "format": "short"
   }
 ]
