@@ -60,5 +60,14 @@
     "chars": 823,
     "output": "output/2026-11-19-voyager-1-dia-luz",
     "format": "short"
+  },
+  {
+    "date": "2026-11-20",
+    "slug": "zarya-primer-modulo-iss",
+    "title": "Zaryá: la NASA pagó la primera pieza de la ISS y Moscú la hizo",
+    "topic_key": "zaryá, el primer módulo de la iss (lanzado el 20-nov-1998)",
+    "chars": 835,
+    "output": "output/2026-11-20-zarya-primer-modulo-iss",
+    "format": "short"
   }
 ]
