@@ -69,5 +69,14 @@
     "chars": 835,
     "output": "output/2026-11-20-zarya-primer-modulo-iss",
     "format": "short"
+  },
+  {
+    "date": "2026-11-20",
+    "slug": "zarya-primer-modulo-iss-largo",
+    "title": "Zaryá, primer módulo de la ISS: lo pagó la NASA, lo hizo Rusia",
+    "topic_key": "zaryá, el primer módulo de la iss (lanzado el 20-nov-1998)",
+    "chars": 10953,
+    "output": "output/2026-11-20-zarya-primer-modulo-iss-largo",
+    "format": "long"
   }
 ]
