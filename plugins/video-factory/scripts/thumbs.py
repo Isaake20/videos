@@ -4,6 +4,10 @@
 usage:
   thumbs.py <slug> "TEXTO A" "TEXTO B" ...   variants (image x text x style) -> work/<slug>/thumbs/NN.jpg + sheet.jpg
   thumbs.py <slug> --pick N                  copy variant N to the newest output/*-<slug>/thumbnail.jpg
+  options for variants (default behaviour is unchanged without them):
+    --dark       near-black background, dimmed photo with a thin red border, and every
+                 image x text x style combination (style no longer tied to image position)
+    --style N    with --dark, only use style N (0-3); e.g. --style 1 = white text on red badge
 
 Texts: 1-3 words each, different words from the title (see the yt-package skill)."""
 import glob, os, shutil, sys, textwrap
@@ -28,6 +32,11 @@ if args[:1] == ["--pick"]:
     meta = load(wd("thumbs", "variants.json"), {}); meta["picked"] = n; save(wd("thumbs", "variants.json"), meta)
     print(f"picked {n} -> {outs[-1]}/thumbnail.jpg"); sys.exit(0)
 
+DARK = "--dark" in args
+ONLY = None
+if "--style" in args:
+    i = args.index("--style"); ONLY = int(args[i + 1]); args = args[:i] + args[i + 2:]
+args = [a for a in args if a != "--dark"]
 texts = [t for t in args if t.strip()] or die(__doc__)
 script = load(wd("script.json")) or die("no script.json")
 LONG = script.get("format") == "long"
@@ -53,10 +62,13 @@ def base(img):
         fr = ImageOps.expand(fg, border=14, fill=(236, 230, 214))
         bg.paste(fr, (W - fr.width - 60, (H - fr.height) // 2))
         return bg
-    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(30)).point(lambda v: v * 0.28)
+    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(30)).point(lambda v: v * (0.08 if DARK else 0.28))
     fg = ImageOps.contain(im, (W, int(H * 0.55)))
     if fg.width < W * 0.8:
         fg = ImageOps.fit(im, (W, int(H * 0.55)), centering=(0.5, 0.3))
+    if DARK:  # dimmed photo as a framed card, so a white image does not melt into a light feed
+        fg = ImageOps.contain(fg, (W - 160, int(H * 0.5))).point(lambda v: int(v * 0.72))
+        fg = ImageOps.expand(fg, border=8, fill=(222, 44, 44))
     bg.paste(fg, ((W - fg.width) // 2, int(H * 0.42) - fg.height // 2))
     return bg
 
@@ -95,9 +107,12 @@ def draw(im, text, st):
     return im
 
 
+if DARK:
+    combos = [(i, t, st) for t in texts for i in images for st in ([ONLY] if ONLY is not None else range(len(STYLES)))][:10]
+else:
+    combos = [(images[k % len(images)], texts[k % len(texts)], k % len(STYLES)) for k in range(min(10, len(images) * len(texts) * len(STYLES)))]
 variants, n = [], 0
-while n < 10 and n < len(images) * len(texts) * len(STYLES):
-    img, text, st = images[n % len(images)], texts[n % len(texts)], n % len(STYLES)
+for img, text, st in combos:
     n += 1
     draw(base(img), text, STYLES[st]).save(wd("thumbs", f"{n:02d}.jpg"), quality=90)
     variants.append({"n": n, "image": img, "text": text, "style": st})
