@@ -78,5 +78,14 @@
     "chars": 10953,
     "output": "output/2026-11-20-zarya-primer-modulo-iss-largo",
     "format": "long"
+  },
+  {
+    "date": "2026-11-21",
+    "slug": "riemann-hipotesis-diez-billones",
+    "title": "Hipótesis de Riemann: ¿por qué 10 billones no bastan?",
+    "topic_key": "hipótesis de riemann",
+    "chars": 878,
+    "output": "output/2026-11-21-riemann-hipotesis-diez-billones",
+    "format": "short"
   }
 ]
